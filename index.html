@@ -1,0 +1,2303 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centro di Controllo — Studio</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom Configuration Tailwind -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            amber: {
+              50: '#fdf8f2',
+              100: '#fbeee0',
+              200: '#f6d9be',
+              300: '#efbc91',
+              400: '#e5975f',
+              500: '#dc7b37',
+              600: '#cd6027',
+              700: '#aa481e',
+              800: '#883a1c',
+              900: '#6f311a',
+              950: '#3c170c',
+            },
+            studio: {
+              bgLight: '#FAF8F5',
+              bgDark: '#0C0A09',
+              cardLight: '#FFFFFF',
+              cardDark: '#141210',
+              borderLight: '#EAE6DF',
+              borderDark: '#26211C',
+              accent: '#965604',
+              accentHover: '#764003',
+              accentLight: '#F5E6D3',
+              textDarkPrim: '#EAE6DF',
+              textDarkSec: '#B8B0A5',
+              textLightPrim: '#1C1917',
+              textLightSec: '#57534E',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Transizioni fluide */
+    .transition-all-300 {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Scrollbar personalizzata */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #2D2822;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #E5DCD3;
+      border-radius: 3px;
+    }
+    
+    /* Animazioni per la comparsa delle viste */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-studio-bgLight dark:bg-studio-bgDark text-studio-textLightPrim dark:text-studio-textDarkPrim font-sans transition-colors duration-300 min-h-screen flex flex-col selection:bg-studio-accent selection:text-white">
+
+  <!-- ================= TOP NAVBAR ================= -->
+  <header class="bg-[#52361B] text-white border-b border-[#6E4926] px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow-md">
+    <div class="flex items-center space-x-3">
+      <!-- Icona del Centro di Controllo -->
+      <div class="bg-studio-accent p-2 rounded-lg text-white shadow-inner flex items-center justify-center">
+        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+      </div>
+      <h1 class="text-xl font-bold tracking-tight">Centro di Controllo <span class="font-light text-[#EAE6DF]">— Studio</span></h1>
+    </div>
+
+    <!-- Navigazione Tab Principale -->
+    <nav class="hidden md:flex items-center space-x-1">
+      <button onclick="switchTab('dashboard')" id="tab-dashboard" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#654322] hover:text-white transition-all duration-200 border-b-2 border-transparent">
+        Dashboard
+      </button>
+      <button onclick="switchTab('calendario')" id="tab-calendario" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#654322] hover:text-white transition-all duration-200 border-b-2 border-transparent">
+        Calendario
+      </button>
+      <button onclick="switchTab('risorse')" id="tab-risorse" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#654322] hover:text-white transition-all duration-200 border-b-2 border-transparent">
+        Risorse
+      </button>
+      <button onclick="switchTab('archivio')" id="tab-archivio" class="px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#654322] hover:text-white transition-all duration-200 border-b-2 border-transparent">
+        Archivio
+      </button>
+    </nav>
+
+    <!-- Pulsanti di Servizio e Profilo -->
+    <div class="flex items-center space-x-4">
+      <!-- Search Input Globale -->
+      <div class="relative hidden sm:block">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-stone-300">
+          <i data-lucide="search" class="w-4 h-4"></i>
+        </span>
+        <input type="text" id="global-search" oninput="handleGlobalSearch(event)" placeholder="Cerca lezioni..." 
+               class="bg-[#654322] text-[#FAF8F5] placeholder-stone-300 text-xs rounded-lg pl-9 pr-4 py-2 w-48 focus:outline-none focus:ring-1 focus:ring-amber-400 border border-[#78512C] transition-all-300 focus:w-60">
+      </div>
+
+      <!-- Theme Switcher -->
+      <button onclick="toggleTheme()" class="p-2 rounded-lg bg-[#654322] hover:bg-[#78512C] text-stone-100 transition-colors duration-200" title="Cambia Tema">
+        <i data-lucide="sun" id="theme-icon-light" class="w-4.5 h-4.5 hidden"></i>
+        <i data-lucide="moon" id="theme-icon-dark" class="w-4.5 h-4.5"></i>
+      </button>
+
+      <!-- Notifiche (Simulate) -->
+      <button class="p-2 rounded-lg bg-[#654322] hover:bg-[#78512C] text-stone-100 transition-colors duration-200 relative" onclick="showNotificationAlert()">
+        <i data-lucide="bell" class="w-4.5 h-4.5"></i>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-400 rounded-full animate-ping"></span>
+      </button>
+
+      <!-- Profilo Studente -->
+      <div class="flex items-center space-x-3 pl-2 border-l border-[#654322]">
+        <div class="w-8 h-8 rounded-full bg-amber-200 border-2 border-amber-400 flex items-center justify-center font-bold text-[#52361B] shadow">
+          S
+        </div>
+        <div class="hidden lg:block text-left leading-none">
+          <div class="text-xs font-semibold text-white">Studente</div>
+          <div class="text-[10px] text-amber-200 font-medium">Sessione Attiva</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= PRINCIPALE LAYOUT GRID ================= -->
+  <div class="flex-1 flex flex-col md:flex-row overflow-x-hidden">
+    
+    <!-- ================= LEFT SIDEBAR ================= -->
+    <aside class="w-full md:w-64 bg-studio-cardLight dark:bg-studio-cardDark border-b md:border-b-0 md:border-r border-studio-borderLight dark:border-studio-borderDark p-5 flex flex-col justify-between shrink-0 transition-colors duration-300">
+      <div class="space-y-6">
+        <!-- Profilo Widget -->
+        <div class="bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl p-4 flex items-center space-x-3.5 transition-colors duration-300">
+          <div class="relative">
+            <!-- Profilo SVG Personalizzato -->
+            <div class="w-11 h-11 rounded-full bg-studio-accent/15 dark:bg-studio-accent/20 border border-studio-accent/30 flex items-center justify-center text-studio-accent shadow-sm overflow-hidden">
+              <i data-lucide="user" class="w-6 h-6"></i>
+            </div>
+            <div class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-studio-cardLight dark:border-studio-cardDark"></div>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim">Studente</h4>
+            <p class="text-[11px] text-studio-textLightSec dark:text-studio-textDarkSec font-medium flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Sessione Attiva
+            </p>
+          </div>
+        </div>
+
+        <!-- Menu Navigazione Laterale -->
+        <div class="space-y-1">
+          <p class="text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider px-3 mb-2">Monitoraggio</p>
+          
+          <button onclick="switchTab('dashboard')" id="side-dashboard" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group text-studio-textLightSec dark:text-studio-textDarkSec hover:bg-studio-bgLight dark:hover:bg-studio-bgDark hover:text-studio-accent">
+            <i data-lucide="home" class="w-4.5 h-4.5 group-hover:scale-110 transition-transform"></i>
+            <span>Home</span>
+          </button>
+          
+          <button onclick="switchTab('calendario')" id="side-calendario" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group text-studio-textLightSec dark:text-studio-textDarkSec hover:bg-studio-bgLight dark:hover:bg-studio-bgDark hover:text-studio-accent">
+            <i data-lucide="calendar" class="w-4.5 h-4.5 group-hover:scale-110 transition-transform"></i>
+            <span>Calendario</span>
+          </button>
+          
+          <button onclick="switchTab('archivio')" id="side-archivio" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group text-studio-textLightSec dark:text-studio-textDarkSec hover:bg-studio-bgLight dark:hover:bg-studio-bgDark hover:text-studio-accent">
+            <i data-lucide="archive" class="w-4.5 h-4.5 group-hover:scale-110 transition-transform"></i>
+            <span>Lezioni</span>
+          </button>
+
+          <button onclick="simulateEserciziTab()" id="side-esercizi" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group text-studio-textLightSec dark:text-studio-textDarkSec hover:bg-studio-bgLight dark:hover:bg-studio-bgDark hover:text-studio-accent">
+            <i data-lucide="edit-3" class="w-4.5 h-4.5 group-hover:scale-110 transition-transform"></i>
+            <span>Esercizi</span>
+          </button>
+          
+          <button onclick="switchTab('risorse')" id="side-risorse" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group text-studio-textLightSec dark:text-studio-textDarkSec hover:bg-studio-bgLight dark:hover:bg-studio-bgDark hover:text-studio-accent">
+            <i data-lucide="folder-open" class="w-4.5 h-4.5 group-hover:scale-110 transition-transform"></i>
+            <span>Materiali</span>
+          </button>
+          
+          <button onclick="showSettingsAlert()" id="side-impostazioni" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group text-studio-textLightSec dark:text-studio-textDarkSec hover:bg-studio-bgLight dark:hover:bg-studio-bgDark hover:text-studio-accent">
+            <i data-lucide="settings" class="w-4.5 h-4.5 group-hover:scale-110 transition-transform"></i>
+            <span>Impostazioni</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottone "Aggiungi Lezione" in fondo alla sidebar -->
+      <div class="mt-8 pt-4 border-t border-studio-borderLight dark:border-studio-borderDark">
+        <button onclick="openModal()" class="w-full py-3 bg-studio-accent hover:bg-studio-accentHover text-white font-semibold text-xs rounded-xl shadow-lg hover:shadow-xl transition-all-300 flex items-center justify-center space-x-2 transform hover:-translate-y-0.5 active:translate-y-0">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Aggiungi Lezione</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ================= CONTENITORE VISTE DINAMICHE ================= -->
+    <main id="main-content" class="flex-1 p-6 md:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+      <!-- Le viste verranno inserite dinamicamente qui dal motore JS -->
+    </main>
+
+  </div>
+
+  <!-- ================= MODALE INSERIMENTO / MODIFICA LEZIONE ================= -->
+  <div id="modal-container" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300 opacity-0">
+    <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl transition-all duration-300 transform scale-95" onclick="event.stopPropagation()">
+      
+      <!-- Intestazione Modale -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-studio-borderLight dark:border-studio-borderDark bg-studio-bgLight dark:bg-studio-bgDark rounded-t-2xl">
+        <div class="flex items-center space-x-2">
+          <div class="p-1.5 rounded-lg bg-studio-accent/15 text-studio-accent">
+            <i data-lucide="book-open" class="w-4.5 h-4.5" id="modal-icon"></i>
+          </div>
+          <h3 id="modal-title" class="text-base font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim">Registra Nuova Lezione</h3>
+        </div>
+        <button onclick="closeModal()" class="p-1.5 rounded-lg hover:bg-studio-borderLight dark:hover:bg-studio-borderDark text-studio-textLightSec dark:text-studio-textDarkSec transition-colors duration-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Form Modale -->
+      <form id="activity-form" onsubmit="saveActivity(event)" class="p-6 space-y-5">
+        <input type="hidden" id="activity-id">
+        
+        <!-- Riga 1: Titolo / Nome Argomento -->
+        <div class="space-y-1.5">
+          <label for="topic" class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Nome Argomento <span class="text-red-500">*</span></label>
+          <input type="text" id="topic" required placeholder="Esempio: Flexbox & Grid Masterclass" 
+                 class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-studio-accent/30 focus:border-studio-accent transition-all-300 text-studio-textLightPrim dark:text-studio-textDarkPrim">
+        </div>
+
+        <!-- Riga 2: Data e Categoria -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label for="date" class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Data Sessione <span class="text-red-500">*</span></label>
+            <input type="date" id="date" required 
+                   class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-studio-accent/30 focus:border-studio-accent transition-all-300 text-studio-textLightPrim dark:text-studio-textDarkPrim">
+          </div>
+          <div class="space-y-1.5">
+            <label for="category" class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Categoria Disciplinare <span class="text-red-500">*</span></label>
+            <select id="category" required 
+                    class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-studio-accent/30 focus:border-studio-accent transition-all-300 text-studio-textLightPrim dark:text-studio-textDarkPrim">
+              <option value="HTML">HTML</option>
+              <option value="CSS">CSS</option>
+              <option value="JS">JavaScript (JS)</option>
+              <option value="AI-web-development">AI Web Development</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Riga 3: Tipo Attività (Toggles) -->
+        <div class="bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl p-4 space-y-3">
+          <span class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider block">Tipo Attività</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Toggle 1: Svolta Lezione -->
+            <label class="flex items-center justify-between p-3 bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl cursor-pointer hover:border-studio-accent/40 transition-colors">
+              <div class="flex items-center space-x-3">
+                <div class="p-1.5 rounded-lg bg-amber-500/10 text-amber-500 dark:text-amber-400">
+                  <i data-lucide="book-open" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <span class="text-sm font-semibold block">Svolta Lezione</span>
+                  <span class="text-[10px] text-studio-textLightSec dark:text-studio-textDarkSec font-medium">Sessione di studio o lezione completata</span>
+                </div>
+              </div>
+              <input type="checkbox" id="isLessonDone" class="sr-only peer">
+              <div class="w-10 h-6 bg-stone-300 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:height-5 after:width-5 after:transition-all after:w-5 after:h-5 dark:after:border-stone-600 peer-checked:bg-studio-accent relative after:transition-transform"></div>
+            </label>
+
+            <!-- Toggle 2: Caricato Compito -->
+            <label class="flex items-center justify-between p-3 bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl cursor-pointer hover:border-studio-accent/40 transition-colors">
+              <div class="flex items-center space-x-3">
+                <div class="p-1.5 rounded-lg bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">
+                  <i data-lucide="check-square" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <span class="text-sm font-semibold block">Caricato Compito</span>
+                  <span class="text-[10px] text-studio-textLightSec dark:text-studio-textDarkSec font-medium">Esercizio o homework caricato</span>
+                </div>
+              </div>
+              <input type="checkbox" id="isHomeworkUploaded" class="sr-only peer">
+              <div class="w-10 h-6 bg-stone-300 dark:bg-stone-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:height-5 after:width-5 after:transition-all after:w-5 after:h-5 dark:after:border-stone-600 peer-checked:bg-studio-accent relative after:transition-transform"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Riga 4: Link Piattaforma e Note -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label for="platformLink" class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Link Piattaforma (URL)</label>
+            <input type="url" id="platformLink" placeholder="https://piattaforma.it/lezione" 
+                   class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-studio-accent/30 focus:border-studio-accent transition-all-300 text-studio-textLightPrim dark:text-studio-textDarkPrim">
+          </div>
+          <div class="space-y-1.5">
+            <label for="notes" class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Note Rapide</label>
+            <input type="text" id="notes" placeholder="Note rapide o annotazioni..." 
+                   class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-studio-accent/30 focus:border-studio-accent transition-all-300 text-studio-textLightPrim dark:text-studio-textDarkPrim">
+          </div>
+        </div>
+
+        <!-- Riga 4b: Upload Materiale Didattico (File/Slide) -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider block">Materiale Didattico (Slide o File)</label>
+          <div id="file-dropzone" class="border-2 border-dashed border-studio-borderLight dark:border-studio-borderDark rounded-xl p-4 text-center cursor-pointer hover:border-studio-accent/40 transition-colors bg-studio-bgLight/20 dark:bg-studio-bgDark/20 relative group">
+            <input type="file" id="file-input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileSelection(event)">
+            <div class="space-y-1.5" id="dropzone-prompt">
+              <i data-lucide="cloud-upload" class="w-7 h-7 mx-auto text-studio-textLightSec/60 dark:text-studio-textDarkSec/50 group-hover:scale-110 transition-transform"></i>
+              <p class="text-xs font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim">Trascina qui il tuo file o clicca per sfogliare</p>
+              <p class="text-[10px] text-studio-textLightSec dark:text-studio-textDarkSec font-semibold">Slide, PDF, Codice o Immagini (max 2MB)</p>
+            </div>
+            <!-- Anteprima File -->
+            <div id="file-preview" class="hidden flex items-center justify-between p-2.5 bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-lg relative z-10" onclick="event.stopPropagation()">
+              <div class="flex items-center space-x-2.5 truncate">
+                <div class="w-8.5 h-8.5 rounded-lg bg-studio-accentLight dark:bg-[#2C2117] text-studio-accent dark:text-[#E2C7A8] flex items-center justify-center shrink-0">
+                  <i data-lucide="file-text" class="w-4 h-4" id="file-preview-icon"></i>
+                </div>
+                <div class="text-left truncate leading-none">
+                  <span id="file-preview-name" class="text-xs font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim block truncate max-w-sm">nome_file.pdf</span>
+                  <span id="file-preview-size" class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec font-bold mt-1 block">120 KB</span>
+                </div>
+              </div>
+              <button type="button" onclick="removeAttachedFile(event)" class="p-1.5 rounded hover:bg-red-500/10 text-red-500" title="Rimuovi"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Riga 5: Descrizione -->
+        <div class="space-y-1.5">
+          <label for="description" class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Descrizione Argomenti Trattati</label>
+          <textarea id="description" rows="3" placeholder="Scrivi una breve descrizione dei concetti affrontati in questa sessione..." 
+                    class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-studio-accent/30 focus:border-studio-accent transition-all-300 text-studio-textLightPrim dark:text-studio-textDarkPrim resize-none"></textarea>
+        </div>
+
+        <!-- Riga 6: Tag e Autovalutazione -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 items-end">
+          <div class="space-y-1.5">
+            <label for="tags" class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Tag (separati da virgola)</label>
+            <input type="text" id="tags" placeholder="react, hooks, frontend" 
+                   class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-studio-accent/30 focus:border-studio-accent transition-all-300 text-studio-textLightPrim dark:text-studio-textDarkPrim">
+          </div>
+
+          <!-- Rating Stars -->
+          <div class="space-y-2">
+            <label class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider block">Autovalutazione Grado Comprensione</label>
+            <div class="flex items-center space-x-1.5 bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-4 py-2 h-[42px] justify-between">
+              <span class="text-xs font-medium text-studio-textLightSec dark:text-studio-textDarkSec">Comprensione:</span>
+              <div class="flex items-center space-x-1 text-amber-500">
+                <button type="button" onclick="setRating(1)" class="focus:outline-none transform hover:scale-125 transition-transform"><i data-lucide="star" class="w-5.5 h-5.5" id="star-1"></i></button>
+                <button type="button" onclick="setRating(2)" class="focus:outline-none transform hover:scale-125 transition-transform"><i data-lucide="star" class="w-5.5 h-5.5" id="star-2"></i></button>
+                <button type="button" onclick="setRating(3)" class="focus:outline-none transform hover:scale-125 transition-transform"><i data-lucide="star" class="w-5.5 h-5.5" id="star-3"></i></button>
+                <button type="button" onclick="setRating(4)" class="focus:outline-none transform hover:scale-125 transition-transform"><i data-lucide="star" class="w-5.5 h-5.5" id="star-4"></i></button>
+                <button type="button" onclick="setRating(5)" class="focus:outline-none transform hover:scale-125 transition-transform"><i data-lucide="star" class="w-5.5 h-5.5" id="star-5"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pulsanti Azione Form -->
+        <div class="flex items-center justify-end space-x-3 pt-4 border-t border-studio-borderLight dark:border-studio-borderDark">
+          <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl border border-studio-borderLight dark:border-studio-borderDark text-sm font-semibold text-studio-textLightSec dark:text-studio-textDarkSec hover:bg-studio-bgLight dark:hover:bg-studio-bgDark transition-colors">
+            Annulla
+          </button>
+          <button type="submit" class="px-6 py-2.5 bg-studio-accent hover:bg-studio-accentHover text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+            Salva Sessione
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Alert Popup di Notifica (Globale) -->
+  <div id="toast" class="fixed bottom-6 right-6 px-5 py-3 rounded-xl bg-studio-accent text-white shadow-2xl flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <div class="p-1 rounded bg-white/20 text-white"><i data-lucide="info" class="w-4 h-4"></i></div>
+    <span id="toast-message" class="text-xs font-semibold">Notifica inviata con successo!</span>
+  </div>
+
+  <!-- ================= CORE LOGIC JAVASCRIPT ================= -->
+  <script>
+    // ================= STATO DI APPLICAZIONE =================
+    const APP_STATE = {
+      activities: [],
+      activeTab: 'dashboard',       // 'dashboard' | 'calendario' | 'risorse' | 'archivio'
+      selectedDate: new Date(),     // Giorno corretto selezionato nel calendario
+      currentCalendarMonth: new Date(), // Mese visualizzato al momento
+      rating: 5,                    // Autovalutazione form corrente (1-5)
+      filters: {
+        searchQuery: '',
+        category: 'ALL',
+        startDate: '',
+        endDate: ''
+      },
+      dashboardFilterCategory: 'ALL', // Filtro categoria per la griglia appunti in Dashboard
+      theme: 'dark',
+      pagination: {
+        currentPage: 1,
+        itemsPerPage: 5
+      }
+    };
+
+    // ================= INIZIALIZZAZIONE & MOCK DATA =================
+    // Questa funzione crea date relative ad oggi per garantire che il calendario e le statistiche
+    // siano popolati in modo spettacolare anche se aperti mesi o anni dopo la stesura del codice.
+    function generateMockActivities() {
+      const today = new Date();
+      const relativeDate = (daysOffset) => {
+        const d = new Date(today);
+        d.setDate(today.getDate() + daysOffset);
+        return d.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+      };
+
+      return [
+        {
+          id: 'mock-1',
+          topic: 'Introduzione ai Large Language Models & Prompting',
+          date: relativeDate(-4),
+          category: 'AI-web-development',
+          isLessonDone: true,
+          isHomeworkUploaded: true,
+          platformLink: 'https://classroom.google.com/c/ai-llm-intro',
+          notes: 'Caricate slide PDF e riassunti con formule in Markdown.',
+          description: 'Studio dei concetti di base dell\'architettura dei Transformer, meccanismo di attenzione, auto-regressività e tecniche avanzate di prompting sistematico (Few-Shot e Chain-of-Thought).',
+          tags: ['ai', 'llm', 'prompting', 'transformer'],
+          rating: 5
+        },
+        {
+          id: 'mock-2',
+          topic: 'Flexbox & CSS Grid Layout Masterclass',
+          date: relativeDate(-8),
+          category: 'CSS',
+          isLessonDone: true,
+          isHomeworkUploaded: true,
+          platformLink: 'https://scuola-sviluppo-web.it/courses/css-flex-grid',
+          notes: 'Repository Github con 5 esercizi completati e caricati.',
+          description: 'Approfondimento sulle proprietà di allineamento degli elementi in Flexbox e impostazione di griglie complesse bidimensionali tramite CSS Grid. Risoluzione di problemi di responsive design.',
+          tags: ['css', 'flexbox', 'grid-layout', 'responsive'],
+          rating: 4
+        },
+        {
+          id: 'mock-3',
+          topic: 'Prompt Engineering per Developer ed API OpenAI',
+          date: relativeDate(-12),
+          category: 'AI-web-development',
+          isLessonDone: true,
+          isHomeworkUploaded: false,
+          platformLink: 'https://openai.com/blog/prompt-engineering',
+          notes: 'Utilizzo di Playground OpenAI per testare le chiamate REST.',
+          description: 'Analisi dei parametri fondamentali per invocare le API OpenAI come temperatura, top_p, penalty e creazione di system prompt strutturati per applicazioni di codifica assistita.',
+          tags: ['prompting', 'api', 'openai', 'backend'],
+          rating: 3
+        },
+        {
+          id: 'mock-4',
+          topic: 'Asynchronous JavaScript Deep Dive: Promises, Async/Await',
+          date: relativeDate(-5),
+          category: 'JS',
+          isLessonDone: true,
+          isHomeworkUploaded: true,
+          platformLink: 'https://javascript.info/async',
+          notes: 'Voto superato con il massimo punteggio nel quiz interattivo.',
+          description: 'Funzionamento dell\'Event Loop, dei microtask e macrotask queue. Gestione degli errori tramite blocchi try-catch nelle funzioni asincrone e concatenazione avanzata di Promise.',
+          tags: ['js', 'asincronia', 'promises', 'event-loop'],
+          rating: 5
+        },
+        {
+          id: 'mock-5',
+          topic: 'UI Components Moderni con Tailwind CSS & Glassmorphism',
+          date: relativeDate(-15),
+          category: 'HTML',
+          isLessonDone: true,
+          isHomeworkUploaded: true,
+          platformLink: 'https://tailwindcss.com/docs',
+          notes: 'Creato template di dashboard riutilizzabile ed esportato.',
+          description: 'Progettazione e styling di una dashboard complessa utilizzando unicamente classi utilitarie di Tailwind. Gestione dei colori personalizzati e degli effetti sfocati in dark mode.',
+          tags: ['html', 'tailwindcss', 'components', 'glassmorphism'],
+          rating: 4
+        },
+        {
+          id: 'mock-6',
+          topic: 'Semantic HTML5 e SEO Base per Web Developer',
+          date: relativeDate(-2),
+          category: 'HTML',
+          isLessonDone: true,
+          isHomeworkUploaded: true,
+          platformLink: 'https://web.dev/learn/html',
+          notes: 'Validato documento con validator W3C ufficiale senza errori.',
+          description: 'Studio dei tag semantici HTML5 (article, section, aside, nav, header, footer) e la loro implicazione sul posizionamento SEO, accesibilità ARIA e struttura del DOM.',
+          tags: ['html5', 'seo', 'accessibility', 'semantica'],
+          rating: 4
+        },
+        {
+          id: 'mock-7',
+          topic: 'JavaScript Moderno ES6+: Destructuring, Array Methods, Modules',
+          date: relativeDate(-10),
+          category: 'JS',
+          isLessonDone: true,
+          isHomeworkUploaded: true,
+          platformLink: 'https://developer.mozilla.org/it/docs/Web/JavaScript',
+          notes: 'Esercizi su Map, Filter e Reduce superati brillantemente.',
+          description: 'Utilizzo di array destructuring, object destructuring, operatore rest/spread, moduli ES6 (import/export) ed espressioni regolari per il controllo dei moduli del form.',
+          tags: ['js', 'es6', 'array-methods', 'destructuring'],
+          rating: 5
+        },
+        {
+          id: 'mock-8',
+          topic: 'CSS Variables & Dynamic Styling con JavaScript',
+          date: relativeDate(-1),
+          category: 'CSS',
+          isLessonDone: true,
+          isHomeworkUploaded: true,
+          platformLink: 'https://css-tricks.com/custom-properties',
+          notes: 'Implementato uno switch di tema dinamico funzionante.',
+          description: 'Definizione di Custom Properties nell\'elemento :root, manipolazione dinamica delle variabili CSS via Javascript per gestire palette di colori ed impostazioni in tempo reale.',
+          tags: ['css', 'variables', 'dynamic-theme', 'js-dom'],
+          rating: 4
+        },
+        {
+          id: 'mock-9',
+          topic: 'State Management in Vanilla JavaScript SPA',
+          date: relativeDate(0), // Oggi!
+          category: 'JS',
+          isLessonDone: true,
+          isHomeworkUploaded: false,
+          platformLink: 'https://vanilla-js.com',
+          notes: 'Base di questa SPA! Struttura ad oggetti reattiva.',
+          description: 'Progettazione di una logica di memorizzazione globale dello stato con re-rendering mirato in base alle azioni dell\'utente. Integrazione con localStorage per persistenza totale.',
+          tags: ['js', 'state-management', 'vanilla-spa', 'architecture'],
+          rating: 5
+        },
+        {
+          id: 'mock-10',
+          topic: 'Integrazione API Assistenti OpenAI e Flussi RAG',
+          date: relativeDate(1), // Domani (programmata)
+          category: 'AI-web-development',
+          isLessonDone: false,
+          isHomeworkUploaded: false,
+          platformLink: 'https://platform.openai.com/docs/assistants',
+          notes: 'Materiale didattico salvato nella cartella del corso.',
+          description: 'Pianificazione dello sviluppo di un assistente AI didattico integrato con database vettoriale per interrogare i propri appunti di studio in linguaggio naturale.',
+          tags: ['ai', 'openai-assistants', 'rag', 'vector-db'],
+          rating: 5
+        },
+        {
+          id: 'mock-11',
+          topic: 'CSS Grid Layout Avanzato: Subgrid e Nomi di Linea',
+          date: relativeDate(-3),
+          category: 'CSS',
+          isLessonDone: true,
+          isHomeworkUploaded: false,
+          platformLink: 'https://layout.rachelandrew.co.uk',
+          notes: 'Slide caricate in Risorse -> Folder CSS.',
+          description: 'Approfondimento del concetto di subgrid per allineare componenti nidificati a una griglia principale condivisa. Utilizzo dei nomi di linea per layouts asimmetrici complessi.',
+          tags: ['css', 'grid', 'subgrid', 'alignment'],
+          rating: 3
+        },
+        {
+          id: 'mock-12',
+          topic: 'Animazioni CSS e Micro-interazioni per Web App',
+          date: relativeDate(3), // Fra tre giorni
+          category: 'CSS',
+          isLessonDone: false,
+          isHomeworkUploaded: false,
+          platformLink: 'https://animate.style',
+          notes: 'In attesa di link video conferenza Zoom didattica.',
+          description: 'Analisi delle performance delle animazioni (transform e opacity) contro proprietà di layout. Scrittura di keyframes per micro-interazioni di hover e bottoni magnetici.',
+          tags: ['css', 'animations', 'keyframes', 'ux'],
+          rating: 4
+        }
+      ];
+    }
+
+    function initAppState() {
+      // Inizializza il localStorage se vuoto
+      const savedActivities = localStorage.getItem('studio_activities');
+      if (savedActivities) {
+        APP_STATE.activities = JSON.parse(savedActivities);
+      } else {
+        APP_STATE.activities = generateMockActivities();
+        localStorage.setItem('studio_activities', JSON.stringify(APP_STATE.activities));
+      }
+      
+      // Inizializza il tema salvato o usa Dark Mode di default
+      const savedTheme = localStorage.getItem('studio_theme');
+      if (savedTheme) {
+        APP_STATE.theme = savedTheme;
+      } else {
+        APP_STATE.theme = 'dark';
+      }
+      applyTheme();
+    }
+
+    function saveStateToLocalStorage() {
+      localStorage.setItem('studio_activities', JSON.stringify(APP_STATE.activities));
+    }
+
+    // ================= GESTORE TEMI (LIGHT / DARK) =================
+    function toggleTheme() {
+      APP_STATE.theme = APP_STATE.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('studio_theme', APP_STATE.theme);
+      applyTheme();
+      showToast(`Tema ${APP_STATE.theme === 'dark' ? 'Scuro' : 'Chiaro'} attivato!`);
+      // Ri-renderizza la vista corrente per applicare eventuali classi condizionali
+      renderActiveTab();
+    }
+
+    function applyTheme() {
+      const htmlEl = document.documentElement;
+      const lightIcon = document.getElementById('theme-icon-light');
+      const darkIcon = document.getElementById('theme-icon-dark');
+      
+      if (APP_STATE.theme === 'dark') {
+        htmlEl.classList.add('dark');
+        lightIcon.classList.remove('hidden');
+        darkIcon.classList.add('hidden');
+      } else {
+        htmlEl.classList.remove('dark');
+        lightIcon.classList.add('hidden');
+        darkIcon.classList.remove('hidden');
+      }
+    }
+
+    // ================= ROTTE & CAMBIO TAB (SPA) =================
+    function switchTab(tabId) {
+      APP_STATE.activeTab = tabId;
+      renderActiveTab();
+      
+      // Aggiorna classi di evidenziazione navbar superiore
+      const tabs = ['dashboard', 'calendario', 'risorse', 'archivio'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        const sideBtn = document.getElementById(`side-${t}`);
+        
+        if (t === tabId) {
+          // Top Nav Active Style
+          if (btn) {
+            btn.classList.add('bg-[#654322]', 'text-white', 'border-[#FAF8F5]');
+            btn.classList.remove('border-transparent');
+          }
+          // Sidebar Active Style
+          if (sideBtn) {
+            sideBtn.classList.remove('text-studio-textLightSec', 'dark:text-studio-textDarkSec');
+            sideBtn.classList.add('bg-studio-accent', 'text-white', 'shadow-md');
+          }
+        } else {
+          // Top Nav Inactive Style
+          if (btn) {
+            btn.classList.remove('bg-[#654322]', 'text-white', 'border-[#FAF8F5]');
+            btn.classList.add('border-transparent');
+          }
+          // Sidebar Inactive Style
+          if (sideBtn) {
+            sideBtn.classList.add('text-studio-textLightSec', 'dark:text-studio-textDarkSec');
+            sideBtn.classList.remove('bg-studio-accent', 'text-white', 'shadow-md');
+          }
+        }
+      });
+
+      // Rendi inattivo sidebar esercizi simulato se non selezionato
+      const sideEsercizi = document.getElementById('side-esercizi');
+      if (sideEsercizi) {
+        sideEsercizi.classList.add('text-studio-textLightSec', 'dark:text-studio-textDarkSec');
+        sideEsercizi.classList.remove('bg-studio-accent', 'text-white', 'shadow-md');
+      }
+    }
+
+    function renderActiveTab() {
+      const container = document.getElementById('main-content');
+      container.innerHTML = ''; // Svuota layout precedente
+      
+      switch(APP_STATE.activeTab) {
+        case 'dashboard':
+          renderDashboard(container);
+          break;
+        case 'calendario':
+          renderCalendar(container);
+          break;
+        case 'risorse':
+          renderRisorse(container);
+          break;
+        case 'archivio':
+          renderArchivio(container);
+          break;
+        default:
+          renderDashboard(container);
+      }
+      // Re-inizializza le icone Lucide all'interno della vista iniettata
+      lucide.createIcons();
+    }
+
+    // ================= TOAST NOTIFICATION UTILITY =================
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.innerText = message;
+      
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    function showNotificationAlert() {
+      showToast("Hai 2 nuove attività pianificate per la prossima settimana.");
+    }
+    
+    function showSettingsAlert() {
+      showToast("Le preferenze locali sono sincronizzate correttamente.");
+    }
+
+    function simulateEserciziTab() {
+      // Evidenzia pulsante esercizi sidebar
+      const sideEsercizi = document.getElementById('side-esercizi');
+      const tabs = ['dashboard', 'calendario', 'risorse', 'archivio'];
+      tabs.forEach(t => {
+        const sideBtn = document.getElementById(`side-${t}`);
+        if (sideBtn) sideBtn.classList.remove('bg-studio-accent', 'text-white', 'shadow-md');
+      });
+      sideEsercizi.classList.add('bg-studio-accent', 'text-white', 'shadow-md');
+      
+      const container = document.getElementById('main-content');
+      container.innerHTML = `
+        <div class="animate-fade-in space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-2xl md:text-3xl font-extrabold text-studio-textLightPrim dark:text-studio-textDarkPrim">Esercizi & Consegne</h2>
+              <p class="text-xs md:text-sm text-studio-textLightSec dark:text-studio-textDarkSec font-medium mt-1">Gestisci la lista completa dei tuoi compiti, laboratori pratici e consegne.</p>
+            </div>
+            <button onclick="openModal()" class="px-4 py-2.5 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-bold rounded-xl shadow transition-colors flex items-center gap-2">
+              <i data-lucide="plus" class="w-4 h-4"></i> Nuova Attività
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center mb-3">
+                  <i data-lucide="clock" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-sm">Da Completare</h4>
+                <p class="text-2xl font-black mt-2 text-studio-textLightPrim dark:text-studio-textDarkPrim">
+                  ${APP_STATE.activities.filter(a => !a.isHomeworkUploaded).length}
+                </p>
+              </div>
+              <span class="text-[10px] text-studio-textLightSec dark:text-studio-textDarkSec mt-4 font-semibold">In attesa del caricamento dei file</span>
+            </div>
+            
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-3">
+                  <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-sm">Completati & Consegnati</h4>
+                <p class="text-2xl font-black mt-2 text-studio-textLightPrim dark:text-studio-textDarkPrim">
+                  ${APP_STATE.activities.filter(a => a.isHomeworkUploaded).length}
+                </p>
+              </div>
+              <span class="text-[10px] text-studio-textLightSec dark:text-studio-textDarkSec mt-4 font-semibold">Tutti i compiti registrati nel database</span>
+            </div>
+
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark p-5 rounded-2xl flex flex-col justify-between">
+              <div>
+                <div class="w-10 h-10 rounded-xl bg-studio-accent/10 text-studio-accent flex items-center justify-center mb-3">
+                  <i data-lucide="award" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-sm">Autovalutazione Media</h4>
+                <p class="text-2xl font-black mt-2 text-studio-textLightPrim dark:text-studio-textDarkPrim">
+                  ${(APP_STATE.activities.reduce((acc, curr) => acc + curr.rating, 0) / APP_STATE.activities.length).toFixed(1)} / 5
+                </p>
+              </div>
+              <span class="text-[10px] text-studio-textLightSec dark:text-studio-textDarkSec mt-4 font-semibold">Grado medio di comprensione dei task</span>
+            </div>
+          </div>
+
+          <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl overflow-hidden shadow-sm">
+            <div class="px-6 py-4 border-b border-studio-borderLight dark:border-studio-borderDark bg-studio-bgLight/40 dark:bg-studio-bgDark/40 flex justify-between items-center">
+              <h3 class="font-bold text-sm">Registro Esercizi</h3>
+              <i data-lucide="filter" class="w-4 h-4 text-studio-textLightSec dark:text-studio-textDarkSec cursor-pointer"></i>
+            </div>
+            
+            <div class="divide-y divide-studio-borderLight dark:divide-studio-borderDark">
+              ${APP_STATE.activities.map(a => `
+                <div class="p-4 sm:px-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${a.category === 'AI-web-development' ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300' : 'bg-studio-accentLight text-studio-accent dark:bg-[#2C2117] dark:text-[#E2C7A8]'}">${a.category}</span>
+                      <span class="text-xs text-studio-textLightSec dark:text-studio-textDarkSec font-medium">${formatDateString(a.date)}</span>
+                    </div>
+                    <h5 class="font-bold text-sm mt-1 text-studio-textLightPrim dark:text-studio-textDarkPrim">${a.topic}</h5>
+                  </div>
+                  
+                  <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${a.isHomeworkUploaded ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'}">
+                      <i data-lucide="${a.isHomeworkUploaded ? 'check-circle' : 'alert-circle'}" class="w-3.5 h-3.5"></i>
+                      ${a.isHomeworkUploaded ? 'Consegnato' : 'Da Consegnare'}
+                    </span>
+                    
+                    <div class="flex gap-2">
+                      <button onclick="openModal('${a.id}')" class="p-1.5 rounded hover:bg-studio-bgLight dark:hover:bg-studio-bgDark text-studio-textLightSec dark:text-studio-textDarkSec"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                      <button onclick="deleteActivity('${a.id}')" class="p-1.5 rounded hover:bg-red-500/10 text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    // ================= UTILITY DI FORMATTAZIONE DATE =================
+    const MONTH_NAMES = [
+      "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+      "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"
+    ];
+    
+    const DAY_NAMES = [
+      "Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"
+    ];
+
+    function formatDateString(dateStr) {
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      const d = new Date(parts[0], parts[1] - 1, parts[2]);
+      return `${d.getDate()} ${MONTH_NAMES[d.getMonth()].substring(0, 3)} ${d.getFullYear()}`;
+    }
+
+    function handleGlobalSearch(e) {
+      const query = e.target.value.toLowerCase();
+      APP_STATE.filters.searchQuery = query;
+      
+      // Se siamo nell'archivio, esegui il rendering aggiornato dell'archivio
+      if (APP_STATE.activeTab === 'archivio') {
+        const tableBody = document.getElementById('archive-table-body');
+        if (tableBody) {
+          renderArchiveTableRows();
+        }
+      } else {
+        // Altrimenti reindirizza all'archivio con il filtro applicato
+        switchTab('archivio');
+        const searchInput = document.getElementById('search-archive-input');
+        if (searchInput) searchInput.value = query;
+      }
+    }
+
+
+    // =========================================================================
+    // 1. RENDER VISTA DASHBOARD (HOME)
+    // =========================================================================
+    function setDashboardFilterCategory(cat) {
+      APP_STATE.dashboardFilterCategory = cat;
+      const catContainer = document.getElementById('notes-grid-container');
+      if (catContainer) {
+        renderDashboardNotesGrid(catContainer);
+      }
+      
+      // Evidenzia il badge attivo
+      const badges = ['ALL', 'HTML', 'CSS', 'JS', 'AI-web-development'];
+      badges.forEach(c => {
+        const badgeBtn = document.getElementById(`dash-badge-${c}`);
+        if (!badgeBtn) return;
+        if (c === cat) {
+          badgeBtn.classList.remove('bg-studio-cardLight', 'dark:bg-studio-cardDark', 'text-studio-textLightSec', 'dark:text-studio-textDarkSec');
+          badgeBtn.classList.add('bg-studio-accent', 'text-white', 'shadow-sm');
+        } else {
+          badgeBtn.classList.add('bg-studio-cardLight', 'dark:bg-studio-cardDark', 'text-studio-textLightSec', 'dark:text-studio-textDarkSec');
+          badgeBtn.classList.remove('bg-studio-accent', 'text-white', 'shadow-sm');
+        }
+      });
+    }
+
+    function renderDashboardNotesGrid(container) {
+      const filtered = APP_STATE.dashboardFilterCategory === 'ALL'
+        ? APP_STATE.activities
+        : APP_STATE.activities.filter(a => a.category === APP_STATE.dashboardFilterCategory);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-8 text-center text-xs font-semibold text-studio-textLightSec dark:text-studio-textDarkSec">
+            Nessun appunto trovato in questa categoria.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(a => {
+        let catBadgeColor = '';
+        if (a.category === 'AI-web-development') {
+          catBadgeColor = 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300';
+        } else {
+          catBadgeColor = 'bg-studio-accentLight text-studio-accent dark:bg-[#2C2117] dark:text-[#E2C7A8]';
+        }
+
+        return `
+          <div class="p-4 rounded-xl border border-studio-borderLight dark:border-studio-borderDark bg-studio-bgLight/30 dark:bg-studio-bgDark/30 hover:border-studio-accent/30 transition-all duration-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${catBadgeColor}">${a.category}</span>
+                <span class="text-[10px] text-studio-textLightSec dark:text-studio-textDarkSec font-semibold">${formatDateString(a.date)}</span>
+              </div>
+              <h5 class="font-bold text-xs text-studio-textLightPrim dark:text-studio-textDarkPrim line-clamp-1">${a.topic}</h5>
+              <p class="text-[11px] text-studio-textLightSec dark:text-studio-textDarkSec line-clamp-2 mt-1 font-medium">${a.description || 'Nessuna descrizione specificata.'}</p>
+            </div>
+            
+            <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-studio-borderLight/40 dark:border-studio-borderDark/40">
+              <div class="flex text-amber-500 scale-90">
+                ${Array(5).fill(0).map((_, i) => `
+                  <i data-lucide="star" class="w-3.5 h-3.5 ${i < a.rating ? 'fill-current' : 'text-stone-300 dark:text-stone-700'}"></i>
+                `).join('')}
+              </div>
+              <button onclick="openModal('${a.id}')" class="text-[10px] text-studio-accent hover:text-studio-accentHover font-bold flex items-center space-x-1">
+                <span>Modifica</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function renderDashboard(container) {
+      // Calcoli statistiche
+      const totalActivities = APP_STATE.activities.length;
+      const homeworksConsegnati = APP_STATE.activities.filter(a => a.isHomeworkUploaded).length;
+      const lezioniSvolte = APP_STATE.activities.filter(a => a.isLessonDone).length;
+      const avgRating = totalActivities > 0 
+        ? (APP_STATE.activities.reduce((sum, a) => sum + a.rating, 0) / totalActivities).toFixed(1)
+        : 0;
+
+      container.innerHTML = `
+        <div class="animate-fade-in space-y-8">
+          
+          <!-- Sezione Intestazione -->
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h2 class="text-2xl md:text-3xl font-extrabold text-studio-textLightPrim dark:text-studio-textDarkPrim leading-none">Centro di Controllo</h2>
+              <p class="text-xs md:text-sm text-studio-textLightSec dark:text-studio-textDarkSec font-medium mt-1.5">Riepilogo generale e monitoraggio dell'avanzamento dello studio.</p>
+            </div>
+            
+            <!-- Badges di categoria orizzontali -->
+            <div class="flex flex-wrap gap-2">
+              <button onclick="setDashboardFilterCategory('ALL')" id="dash-badge-ALL" class="px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200 bg-studio-accent text-white">Tutte le Categorie</button>
+              <button onclick="setDashboardFilterCategory('HTML')" id="dash-badge-HTML" class="px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200 bg-studio-cardLight dark:bg-studio-cardDark text-studio-textLightSec dark:text-studio-textDarkSec border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent">HTML</button>
+              <button onclick="setDashboardFilterCategory('CSS')" id="dash-badge-CSS" class="px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200 bg-studio-cardLight dark:bg-studio-cardDark text-studio-textLightSec dark:text-studio-textDarkSec border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent">CSS</button>
+              <button onclick="setDashboardFilterCategory('JS')" id="dash-badge-JS" class="px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200 bg-studio-cardLight dark:bg-studio-cardDark text-studio-textLightSec dark:text-studio-textDarkSec border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent">JS</button>
+              <button onclick="setDashboardFilterCategory('AI-web-development')" id="dash-badge-AI-web-development" class="px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200 bg-studio-cardLight dark:bg-studio-cardDark text-studio-textLightSec dark:text-studio-textDarkSec border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent">AI Web Development</button>
+            </div>
+          </div>
+
+          <!-- GRID STATISTICHE RAPIDE -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <!-- Totale Sessioni -->
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark p-5 rounded-2xl shadow-sm flex items-center space-x-4">
+              <div class="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                <i data-lucide="book-open" class="w-5.5 h-5.5"></i>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Sessioni Totali</p>
+                <h3 class="text-xl md:text-2xl font-black mt-0.5">${totalActivities}</h3>
+              </div>
+            </div>
+
+            <!-- Lezioni Svolte -->
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark p-5 rounded-2xl shadow-sm flex items-center space-x-4">
+              <div class="w-11 h-11 rounded-xl bg-studio-accent/10 text-studio-accent flex items-center justify-center shrink-0">
+                <i data-lucide="graduation-cap" class="w-5.5 h-5.5"></i>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Lezioni Svolte</p>
+                <h3 class="text-xl md:text-2xl font-black mt-0.5">${lezioniSvolte}</h3>
+              </div>
+            </div>
+
+            <!-- Compiti Consegnati -->
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark p-5 rounded-2xl shadow-sm flex items-center space-x-4">
+              <div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                <i data-lucide="check-square" class="w-5.5 h-5.5"></i>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Compiti Consegnati</p>
+                <h3 class="text-xl md:text-2xl font-black mt-0.5">${homeworksConsegnati}</h3>
+              </div>
+            </div>
+
+            <!-- Autovalutazione Media -->
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark p-5 rounded-2xl shadow-sm flex items-center space-x-4">
+              <div class="w-11 h-11 rounded-xl bg-yellow-500/10 text-yellow-500 flex items-center justify-center shrink-0">
+                <i data-lucide="star" class="w-5.5 h-5.5"></i>
+              </div>
+              <div>
+                <p class="text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Comprensione Media</p>
+                <h3 class="text-xl md:text-2xl font-black mt-0.5">${avgRating} <span class="text-xs font-semibold text-studio-textLightSec dark:text-studio-textDarkSec">/ 5</span></h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEZIONE CENTRALE: APPUNTI E MATERIALI -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Scheda Appunti Corso (Grande, 2 Colonne su Lg) -->
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl p-5 md:p-6 shadow-sm lg:col-span-2 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <i data-lucide="edit-3" class="w-5 h-5 text-studio-accent"></i>
+                  <h4 class="font-bold text-sm text-studio-textLightPrim dark:text-studio-textDarkPrim">Appunti Corso & Lezioni</h4>
+                </div>
+                <button onclick="openModal()" class="px-3 py-1.5 bg-studio-accent hover:bg-studio-accentHover text-white text-[10px] font-bold rounded-lg transition-colors flex items-center space-x-1.5">
+                  <i data-lucide="plus" class="w-3 h-3"></i>
+                  <span>Aggiungi appunto</span>
+                </button>
+              </div>
+
+              <!-- Griglia degli appunti filtrata -->
+              <div id="notes-grid-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Verrà iniettato da renderDashboardNotesGrid() -->
+              </div>
+            </div>
+
+            <!-- Sidebar di destra della Dashboard: Materiali e Risorse Rapide -->
+            <div class="space-y-6">
+              
+              <!-- Scheda Materiali Didattici -->
+              <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl p-5 md:p-6 shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <i data-lucide="layers" class="w-5 h-5 text-studio-accent"></i>
+                    <h4 class="font-bold text-sm text-studio-textLightPrim dark:text-studio-textDarkPrim">Materiali Didattici</h4>
+                  </div>
+                  <i data-lucide="more-horizontal" class="w-4 h-4 text-studio-textLightSec dark:text-studio-textDarkSec cursor-pointer"></i>
+                </div>
+                
+                <p class="text-xs text-studio-textLightSec dark:text-studio-textDarkSec font-medium">Accedi velocemente alle tue diapositive, documenti e assets didattici salvati.</p>
+                
+                <div class="grid grid-cols-4 gap-3 text-center">
+                  <div class="p-3 bg-studio-bgLight dark:bg-studio-bgDark rounded-xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 cursor-pointer transition-colors" onclick="switchTab('risorse')">
+                    <i data-lucide="file-text" class="w-5 h-5 mx-auto text-red-500 mb-1.5"></i>
+                    <span class="text-[9px] font-semibold text-studio-textLightSec dark:text-studio-textDarkSec block">PDF</span>
+                  </div>
+                  <div class="p-3 bg-studio-bgLight dark:bg-studio-bgDark rounded-xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 cursor-pointer transition-colors" onclick="switchTab('risorse')">
+                    <i data-lucide="presentation" class="w-5 h-5 mx-auto text-amber-500 mb-1.5"></i>
+                    <span class="text-[9px] font-semibold text-studio-textLightSec dark:text-studio-textDarkSec block">Slide</span>
+                  </div>
+                  <div class="p-3 bg-studio-bgLight dark:bg-studio-bgDark rounded-xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 cursor-pointer transition-colors" onclick="switchTab('risorse')">
+                    <i data-lucide="image" class="w-5 h-5 mx-auto text-emerald-500 mb-1.5"></i>
+                    <span class="text-[9px] font-semibold text-studio-textLightSec dark:text-studio-textDarkSec block">Asset</span>
+                  </div>
+                  <div class="p-3 bg-studio-bgLight dark:bg-studio-bgDark rounded-xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 cursor-pointer transition-colors" onclick="switchTab('risorse')">
+                    <i data-lucide="code-2" class="w-5 h-5 mx-auto text-indigo-500 mb-1.5"></i>
+                    <span class="text-[9px] font-semibold text-studio-textLightSec dark:text-studio-textDarkSec block">Codice</span>
+                  </div>
+                </div>
+
+                <button onclick="switchTab('risorse')" class="w-full py-2.5 border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/30 text-studio-textLightSec dark:text-studio-textDarkSec font-bold text-xs rounded-xl transition-all duration-200">
+                  Gestisci Materiali
+                </button>
+              </div>
+
+              <!-- Scheda Risorse Web (Link Utili) -->
+              <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl p-5 md:p-6 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2">
+                  <i data-lucide="link" class="w-5 h-5 text-studio-accent"></i>
+                  <h4 class="font-bold text-sm text-studio-textLightPrim dark:text-studio-textDarkPrim">Collegamenti Utili</h4>
+                </div>
+                
+                <div class="space-y-3">
+                  <a href="https://classroom.google.com" target="_blank" class="flex items-center justify-between p-3 bg-studio-bgLight dark:bg-studio-bgDark rounded-xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 transition-colors group">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center"><i data-lucide="graduation-cap" class="w-4 h-4"></i></div>
+                      <span class="text-xs font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim">Google Classroom</span>
+                    </div>
+                    <i data-lucide="external-link" class="w-3.5 h-3.5 text-studio-textLightSec dark:text-studio-textDarkSec group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                  </a>
+
+                  <a href="https://github.com" target="_blank" class="flex items-center justify-between p-3 bg-studio-bgLight dark:bg-studio-bgDark rounded-xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 transition-colors group">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-7 h-7 rounded-lg bg-[#24292e]/10 dark:bg-white/10 text-studio-textLightPrim dark:text-white flex items-center justify-center"><i data-lucide="github" class="w-4 h-4"></i></div>
+                      <span class="text-xs font-bold text-studio-textLightPrim dark:text-white">GitHub Repository</span>
+                    </div>
+                    <i data-lucide="external-link" class="w-3.5 h-3.5 text-studio-textLightSec dark:text-studio-textDarkSec group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- RIGA RIEPILOGO STATISTICO & AI INSIGHT -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Trend di Apprendimento -->
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark p-5 md:p-6 rounded-2xl shadow-sm md:col-span-2 flex flex-col md:flex-row justify-between items-center gap-6">
+              <div class="space-y-2">
+                <h4 class="font-extrabold text-sm text-studio-textLightPrim dark:text-studio-textDarkPrim">Trend Apprendimento</h4>
+                <p class="text-xs text-studio-textLightSec dark:text-studio-textDarkSec font-semibold leading-relaxed">
+                  Hai completato il <span class="text-emerald-500 font-bold text-sm">15% in più</span> di esercizi pratici questo mese rispetto al precedente. L'autovalutazione del grado di comprensione si mantiene costante sulle 4.4 stelle. Continua così!
+                </p>
+              </div>
+              <!-- Grafico/Indicatore Visivo SVG -->
+              <div class="relative shrink-0 flex items-center justify-center">
+                <svg class="w-24 h-24 transform -rotate-90">
+                  <circle cx="48" cy="48" r="40" stroke="currentColor" stroke-width="6" class="text-studio-borderLight dark:text-studio-borderDark fill-transparent" />
+                  <circle cx="48" cy="48" r="40" stroke="currentColor" stroke-width="6" stroke-dasharray="251.2" stroke-dashoffset="37.6" class="text-studio-accent fill-transparent stroke-linecap-round transition-all duration-1000" />
+                </svg>
+                <div class="absolute text-center leading-none">
+                  <span class="text-base font-black text-studio-textLightPrim dark:text-studio-textDarkPrim">85%</span>
+                  <span class="text-[8px] text-studio-textLightSec dark:text-studio-textDarkSec block font-bold mt-0.5">COMPLESSIVO</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Insight Card -->
+            <div class="bg-[#764003] text-white p-5 md:p-6 rounded-2xl shadow-lg space-y-3.5 relative overflow-hidden flex flex-col justify-between">
+              <!-- Effetto cerchio grafico decorativo -->
+              <div class="absolute -right-8 -top-8 w-24 h-24 bg-white/5 rounded-full blur-2xl"></div>
+              
+              <div class="space-y-2.5">
+                <div class="flex items-center space-x-2">
+                  <i data-lucide="sparkles" class="w-5 h-5 text-amber-300"></i>
+                  <h4 class="font-extrabold text-sm text-white">AI Insight</h4>
+                </div>
+                <p class="text-xs text-amber-100/90 font-medium leading-relaxed">
+                  Ti consigliamo di ripassare l'argomento <strong class="text-white font-bold">"Asynchronous JavaScript"</strong>. Sebbene tu abbia completato l'esercizio, l'autovalutazione della sessione precedente indica un'incertezza sulla coda dei microtask.
+                </p>
+              </div>
+
+              <button onclick="switchTab('calendario')" class="w-full py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-[10px] rounded-lg transition-colors border border-white/10 flex items-center justify-center gap-1.5">
+                <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                <span>Pianifica ripasso</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+      // Esegui rendering iniziale della griglia appunti in Dashboard
+      const gridContainer = document.getElementById('notes-grid-container');
+      renderDashboardNotesGrid(gridContainer);
+      
+      // Inizializza icone
+      lucide.createIcons();
+    }
+
+
+    // =========================================================================
+    // 2. RENDER VISTA CALENDARIO
+    // =========================================================================
+    function navigateMonth(direction) {
+      APP_STATE.currentCalendarMonth.setMonth(APP_STATE.currentCalendarMonth.getMonth() + direction);
+      const container = document.getElementById('main-content');
+      renderCalendar(container);
+    }
+
+    function selectDate(year, month, day) {
+      APP_STATE.selectedDate = new Date(year, month, day);
+      
+      // Aggiorna classe attiva della griglia
+      const daysCells = document.querySelectorAll('.calendar-day-cell');
+      daysCells.forEach(cell => {
+        cell.classList.remove('bg-studio-accent', 'text-white', 'shadow-md', 'scale-105');
+        cell.classList.add('bg-studio-cardLight', 'dark:bg-studio-cardDark', 'text-studio-textLightPrim', 'dark:text-studio-textDarkPrim');
+      });
+
+      const activeCell = document.getElementById(`cal-cell-${year}-${month}-${day}`);
+      if (activeCell) {
+        activeCell.classList.remove('bg-studio-cardLight', 'dark:bg-studio-cardDark', 'text-studio-textLightPrim', 'dark:text-studio-textDarkPrim');
+        activeCell.classList.add('bg-studio-accent', 'text-white', 'shadow-md', 'scale-105');
+      }
+
+      // Aggiorna il pannello laterale destro
+      renderDayDetailsPanel();
+    }
+
+    function renderDayDetailsPanel() {
+      const panel = document.getElementById('day-details-panel');
+      if (!panel) return;
+
+      const dateStr = APP_STATE.selectedDate.toISOString().split('T')[0];
+      const activitiesForDay = APP_STATE.activities.filter(a => a.date === dateStr);
+
+      const dayName = DAY_NAMES[APP_STATE.selectedDate.getDay()];
+      const formattedDate = `${dayName}, ${APP_STATE.selectedDate.getDate()} ${MONTH_NAMES[APP_STATE.selectedDate.getMonth()]}`;
+
+      let activitiesHTML = '';
+      if (activitiesForDay.length === 0) {
+        activitiesHTML = `
+          <div class="py-12 text-center text-xs font-semibold text-studio-textLightSec dark:text-studio-textDarkSec space-y-3">
+            <div class="w-10 h-10 rounded-full bg-studio-bgLight dark:bg-studio-bgDark flex items-center justify-center mx-auto text-studio-textLightSec/60">
+              <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+            </div>
+            <p>Nessuna sessione registrata per questo giorno.</p>
+          </div>
+        `;
+      } else {
+        activitiesHTML = activitiesForDay.map(a => {
+          let categoryBadgeColor = '';
+          if (a.category === 'AI-web-development') {
+            categoryBadgeColor = 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300';
+          } else {
+            categoryBadgeColor = 'bg-studio-accentLight text-studio-accent dark:bg-[#2C2117] dark:text-[#E2C7A8]';
+          }
+
+          return `
+            <div class="p-4 bg-studio-bgLight/40 dark:bg-studio-bgDark/40 border border-studio-borderLight dark:border-studio-borderDark rounded-xl space-y-3 relative group hover:border-studio-accent/30 transition-all">
+              
+              <!-- Categoria & Pulsanti Azione -->
+              <div class="flex items-center justify-between">
+                <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${categoryBadgeColor}">${a.category}</span>
+                <div class="flex gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
+                  <button onclick="openModal('${a.id}')" class="p-1 rounded hover:bg-studio-borderLight dark:hover:bg-studio-borderDark text-studio-textLightSec dark:text-studio-textDarkSec" title="Modifica"><i data-lucide="edit" class="w-3.5 h-3.5"></i></button>
+                  <button onclick="deleteActivity('${a.id}')" class="p-1 rounded hover:bg-red-500/10 text-red-500" title="Elimina"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                </div>
+              </div>
+
+              <!-- Titolo Argomento -->
+              <div>
+                <h5 class="text-xs font-extrabold text-studio-textLightPrim dark:text-studio-textDarkPrim leading-snug">${a.topic}</h5>
+                <p class="text-[10px] text-studio-textLightSec dark:text-studio-textDarkSec font-medium mt-1">${a.description || 'Nessuna descrizione.'}</p>
+              </div>
+
+              <!-- Status Toggles in Miniatura -->
+              <div class="flex items-center gap-2 pt-2 border-t border-studio-borderLight/40 dark:border-studio-borderDark/40">
+                <span class="flex items-center gap-1 text-[9px] font-bold ${a.isLessonDone ? 'text-studio-accent' : 'text-stone-300 dark:text-stone-700'}">
+                  <span class="w-1.5 h-1.5 rounded-full ${a.isLessonDone ? 'bg-studio-accent' : 'bg-stone-300 dark:bg-stone-700'}"></span>
+                  Lezione Svolta
+                </span>
+                <span class="flex items-center gap-1 text-[9px] font-bold ${a.isHomeworkUploaded ? 'text-amber-500' : 'text-stone-300 dark:text-stone-700'}">
+                  <span class="w-1.5 h-1.5 rounded-full ${a.isHomeworkUploaded ? 'bg-amber-500' : 'bg-stone-300 dark:bg-stone-700'}"></span>
+                  Compito Caricato
+                </span>
+              </div>
+
+              <!-- Autovalutazione Stelline -->
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[8px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">Autovalutazione:</span>
+                <div class="flex text-amber-500 scale-75 transform origin-right">
+                  ${Array(5).fill(0).map((_, i) => `
+                    <i data-lucide="star" class="w-3.5 h-3.5 ${i < a.rating ? 'fill-current' : 'text-stone-300 dark:text-stone-700'}"></i>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Link Piattaforma -->
+              ${a.platformLink ? `
+                <a href="${a.platformLink}" target="_blank" class="flex items-center justify-center gap-1 w-full py-1.5 bg-studio-accentLight dark:bg-[#2C2117] hover:bg-studio-accent/15 rounded-lg text-[9px] font-bold text-studio-accent dark:text-[#E2C7A8] transition-colors mt-2">
+                  <i data-lucide="external-link" class="w-3 h-3"></i>
+                  Apri Piattaforma Didattica
+                </a>
+              ` : ''}
+
+              <!-- File Allegato Reale -->
+              ${a.attachment ? `
+                <div class="mt-2.5 p-2.5 bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl flex items-center justify-between hover:border-studio-accent/20 transition-all">
+                  <div class="flex items-center space-x-2 truncate">
+                    <i data-lucide="${getIconForAttachment(a.attachment.name)}" class="w-4.5 h-4.5 text-studio-accent shrink-0"></i>
+                    <div class="truncate text-left leading-none">
+                      <span class="text-[10px] font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim block truncate max-w-[130px]" title="${a.attachment.name}">${a.attachment.name}</span>
+                      <span class="text-[8px] text-studio-textLightSec dark:text-studio-textDarkSec font-bold mt-1 block">${a.attachment.size}</span>
+                    </div>
+                  </div>
+                  <button onclick="downloadAttachment('${a.id}')" class="p-1.5 rounded hover:bg-studio-accent/15 text-studio-accent shrink-0" title="Scarica allegato"><i data-lucide="download" class="w-4 h-4"></i></button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      panel.innerHTML = `
+        <div class="space-y-4">
+          <!-- Data Dettaglio Intestazione -->
+          <div class="flex items-center justify-between pb-3.5 border-b border-studio-borderLight dark:border-studio-borderDark">
+            <div class="flex items-center space-x-2">
+              <div class="p-1.5 rounded-lg bg-studio-accent/10 text-studio-accent">
+                <i data-lucide="calendar" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider leading-none">Dettagli Giorno</h4>
+                <h3 class="text-sm font-black text-studio-textLightPrim dark:text-studio-textDarkPrim mt-1.5">${formattedDate}</h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Titolo Conteggio Attività -->
+          <div class="text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">
+            Attività del giorno (${activitiesForDay.length})
+          </div>
+
+          <!-- Contenitore della Lista Attività -->
+          <div class="space-y-3 max-h-[360px] overflow-y-auto pr-1">
+            ${activitiesHTML}
+          </div>
+
+          <!-- Bottone di Creazione Rapida precompilata con la data selezionata -->
+          <button onclick="openModal(null, '${dateStr}')" class="w-full py-2.5 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-bold rounded-xl shadow-lg transition-colors flex items-center justify-center space-x-1.5">
+            <i data-lucide="plus" class="w-4.5 h-4.5"></i>
+            <span>Nuova Attività</span>
+          </button>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function renderCalendar(container) {
+      const year = APP_STATE.currentCalendarMonth.getFullYear();
+      const month = APP_STATE.currentCalendarMonth.getMonth();
+
+      // Primo giorno del mese
+      const firstDayIndex = new Date(year, month, 1).getDay(); // 0 is Sun, 1 is Mon
+      // Correzione index per iniziare da Lunedì (LUN=0, DOM=6)
+      const adjustedFirstDayIndex = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+
+      // Numero di giorni nel mese corrente e nel mese precedente
+      const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
+      const totalDaysInPrevMonth = new Date(year, month, 0).getDate();
+
+      const monthName = MONTH_NAMES[month];
+      
+      // Calcolo sessioni e compiti di questo mese
+      const monthActivities = APP_STATE.activities.filter(a => {
+        const parts = a.date.split('-');
+        return parseInt(parts[0]) === year && parseInt(parts[1]) - 1 === month;
+      });
+      const compitiMese = monthActivities.filter(a => a.isHomeworkUploaded).length;
+      const lezioniMese = monthActivities.filter(a => a.isLessonDone).length;
+
+      container.innerHTML = `
+        <div class="animate-fade-in space-y-6">
+          <!-- Riga Intestazione Calendario -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 class="text-2xl md:text-3xl font-extrabold text-studio-textLightPrim dark:text-studio-textDarkPrim leading-none">${monthName} ${year}</h2>
+              <p class="text-xs md:text-sm text-studio-textLightSec dark:text-studio-textDarkSec font-medium mt-2">Hai registrato ${lezioniMese} lezioni e caricato ${compitiMese} compiti in questo mese.</p>
+            </div>
+
+            <!-- Pulsanti Navigazione -->
+            <div class="flex items-center space-x-2">
+              <button onclick="navigateMonth(-1)" class="p-2 border border-studio-borderLight dark:border-studio-borderDark bg-studio-cardLight dark:bg-studio-cardDark rounded-xl hover:border-studio-accent hover:text-studio-accent transition-colors"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+              <button onclick="APP_STATE.currentCalendarMonth = new Date(); renderCalendar(document.getElementById('main-content'))" class="px-4 py-2 border border-studio-borderLight dark:border-studio-borderDark bg-studio-cardLight dark:bg-studio-cardDark rounded-xl text-xs font-bold hover:border-studio-accent hover:text-studio-accent transition-colors">Oggi</button>
+              <button onclick="navigateMonth(1)" class="p-2 border border-studio-borderLight dark:border-studio-borderDark bg-studio-cardLight dark:bg-studio-cardDark rounded-xl hover:border-studio-accent hover:text-studio-accent transition-colors"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- Layout Griglia Calendario (2 Colonne: Griglia + Pannello Dettagli) -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Colonna Griglia Principale (2/3 della larghezza) -->
+            <div class="lg:col-span-2 bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl p-5 md:p-6 shadow-sm space-y-4">
+              
+              <!-- Intestazione Giorni della Settimana (LUN-DOM) -->
+              <div class="grid grid-cols-7 gap-2 text-center text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider">
+                <div>Lun</div>
+                <div>Mar</div>
+                <div>Mer</div>
+                <div>Gio</div>
+                <div>Ven</div>
+                <div>Sab</div>
+                <div>Dom</div>
+              </div>
+
+              <!-- Griglia dei Giorni -->
+              <div id="calendar-days-grid" class="grid grid-cols-7 gap-2">
+                <!-- Verranno generati dinamicamente -->
+              </div>
+            </div>
+
+            <!-- Colonna Dettagli Giorno Selezionato (1/3 della larghezza) -->
+            <div id="day-details-panel" class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl p-5 md:p-6 shadow-sm">
+              <!-- Verrà inserito dinamicamente da renderDayDetailsPanel() -->
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Generazione dinamica della griglia dei giorni
+      const grid = document.getElementById('calendar-days-grid');
+      let gridHTML = '';
+
+      // 1. Giorni del mese precedente (inattivi)
+      for (let i = adjustedFirstDayIndex - 1; i >= 0; i--) {
+        const d = totalDaysInPrevMonth - i;
+        gridHTML += `
+          <div class="aspect-square flex items-center justify-center p-1 rounded-xl bg-studio-bgLight/20 dark:bg-studio-bgDark/20 border border-studio-borderLight/30 dark:border-studio-borderDark/30 text-studio-textLightSec/40 dark:text-studio-textDarkSec/30 text-xs font-semibold select-none cursor-not-allowed">
+            ${d}
+          </div>
+        `;
+      }
+
+      // 2. Giorni del mese corrente
+      const today = new Date();
+      for (let day = 1; day <= totalDaysInMonth; day++) {
+        const d = new Date(year, month, day);
+        const dateStr = d.toISOString().split('T')[0];
+        
+        // Cerca attività per questa data
+        const dayActivities = APP_STATE.activities.filter(a => a.date === dateStr);
+        const hasLesson = dayActivities.some(a => a.isLessonDone);
+        const hasHomework = dayActivities.some(a => a.isHomeworkUploaded);
+
+        // Controllo se il giorno è quello attualmente selezionato
+        const isSelected = 
+          APP_STATE.selectedDate.getFullYear() === year &&
+          APP_STATE.selectedDate.getMonth() === month &&
+          APP_STATE.selectedDate.getDate() === day;
+
+        // Controllo se il giorno è oggi
+        const isToday = 
+          today.getFullYear() === year &&
+          today.getMonth() === month &&
+          today.getDate() === day;
+
+        let cellClasses = 'calendar-day-cell aspect-square flex flex-col justify-between p-2.5 rounded-xl border transition-all duration-200 cursor-pointer ';
+        if (isSelected) {
+          cellClasses += 'bg-studio-accent text-white border-studio-accent shadow-md scale-105 ';
+        } else {
+          cellClasses += 'bg-studio-cardLight dark:bg-studio-cardDark border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 ';
+          if (isToday) {
+            cellClasses += 'ring-2 ring-studio-accent ring-offset-2 dark:ring-offset-studio-cardDark ';
+          }
+        }
+
+        // Costruisci pallini indicatori
+        let dotsHTML = '';
+        if (dayActivities.length > 0) {
+          dotsHTML = '<div class="flex items-center justify-center space-x-1.5 mt-1">';
+          if (hasLesson) {
+            dotsHTML += `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-studio-accent'}"></span>`;
+          }
+          if (hasHomework) {
+            dotsHTML += `<span class="w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-amber-200' : 'bg-amber-500'}"></span>`;
+          }
+          dotsHTML += '</div>';
+        }
+
+        gridHTML += `
+          <div id="cal-cell-${year}-${month}-${day}" onclick="selectDate(${year}, ${month}, ${day})" class="${cellClasses}">
+            <span class="text-xs font-bold ${isSelected ? 'text-white' : 'text-studio-textLightPrim dark:text-studio-textDarkPrim'}">${day}</span>
+            ${dotsHTML}
+          </div>
+        `;
+      }
+
+      // 3. Giorni del mese successivo (inattivi per riempire la griglia 42 celle standard)
+      const totalCellsInGrid = adjustedFirstDayIndex + totalDaysInMonth;
+      const remainingCells = 42 - totalCellsInGrid;
+      for (let day = 1; day <= remainingCells; day++) {
+        gridHTML += `
+          <div class="aspect-square flex items-center justify-center p-1 rounded-xl bg-studio-bgLight/20 dark:bg-studio-bgDark/20 border border-studio-borderLight/30 dark:border-studio-borderDark/30 text-studio-textLightSec/40 dark:text-studio-textDarkSec/30 text-xs font-semibold select-none cursor-not-allowed">
+            ${day}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = gridHTML;
+
+      // Carica dettagli giorno selezionato
+      renderDayDetailsPanel();
+      
+      // Inizializza icone Lucide
+      lucide.createIcons();
+    }
+
+
+    // =========================================================================
+    // 3. RENDER VISTA RISORSE (MATERIALI SIMULATI)
+    // =========================================================================
+    function simulateDownload(filename) {
+      showToast(`Download avviato per il file: ${filename}`);
+    }
+
+    function simulateFolderClick(folderName) {
+      showToast(`Cartella '${folderName}' aperta con successo.`);
+    }
+
+    function renderRisorse(container) {
+      const activitiesWithFiles = APP_STATE.activities
+        .filter(a => a.attachment)
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+      container.innerHTML = `
+        <div class="animate-fade-in space-y-8">
+          <!-- Riga Intestazione Risorse -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 class="text-2xl md:text-3xl font-extrabold text-studio-textLightPrim dark:text-studio-textDarkPrim leading-none">Risorse di Studio</h2>
+              <p class="text-xs md:text-sm text-studio-textLightSec dark:text-studio-textDarkSec font-medium mt-2">Organizza, gestisci e scarica i tuoi documenti didattici, guide accademiche e modelli utili.</p>
+            </div>
+            
+            <div class="flex space-x-2 shrink-0">
+              <button onclick="showToast('Filtri avanzati non configurati.')" class="px-4 py-2 border border-studio-borderLight dark:border-studio-borderDark bg-studio-cardLight dark:bg-studio-cardDark rounded-xl text-xs font-bold hover:border-studio-accent transition-colors flex items-center gap-1.5">
+                <i data-lucide="filter" class="w-4 h-4"></i> Filtra
+              </button>
+              <button onclick="showToast('Carica un nuovo documento didattico.')" class="px-4 py-2.5 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-bold rounded-xl shadow transition-colors flex items-center gap-1.5">
+                <i data-lucide="upload-cloud" class="w-4 h-4"></i> Carica File
+              </button>
+            </div>
+          </div>
+
+          <!-- GRID 3 SEZIONI (Cartelle, File Ricorrenti, Templates) -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Colonna 1: Cartelle Generali (2 Colonne nidificate) -->
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl p-5 md:p-6 shadow-sm space-y-4">
+              <div class="flex items-center space-x-2 pb-2 border-b border-studio-borderLight dark:border-studio-borderDark">
+                <i data-lucide="folder" class="w-5 h-5 text-studio-accent"></i>
+                <h4 class="font-bold text-sm text-studio-textLightPrim dark:text-studio-textDarkPrim">Cartelle Generali</h4>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div onclick="simulateFolderClick('HTML')" class="p-4 bg-studio-bgLight/50 dark:bg-studio-bgDark/50 rounded-2xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 cursor-pointer transition-colors text-center space-y-2 group">
+                  <i data-lucide="folder-git" class="w-10 h-10 mx-auto text-amber-500 group-hover:scale-110 transition-transform"></i>
+                  <span class="text-xs font-bold block text-studio-textLightPrim dark:text-studio-textDarkPrim">Materiale HTML</span>
+                  <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec block font-semibold">12 elementi</span>
+                </div>
+
+                <div onclick="simulateFolderClick('CSS')" class="p-4 bg-studio-bgLight/50 dark:bg-studio-bgDark/50 rounded-2xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 cursor-pointer transition-colors text-center space-y-2 group">
+                  <i data-lucide="folder-git-2" class="w-10 h-10 mx-auto text-blue-500 group-hover:scale-110 transition-transform"></i>
+                  <span class="text-xs font-bold block text-studio-textLightPrim dark:text-studio-textDarkPrim">Grafica e CSS</span>
+                  <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec block font-semibold">8 elementi</span>
+                </div>
+
+                <div onclick="simulateFolderClick('JS')" class="p-4 bg-studio-bgLight/50 dark:bg-studio-bgDark/50 rounded-2xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 cursor-pointer transition-colors text-center space-y-2 group">
+                  <i data-lucide="folder-code" class="w-10 h-10 mx-auto text-yellow-500 group-hover:scale-110 transition-transform"></i>
+                  <span class="text-xs font-bold block text-studio-textLightPrim dark:text-studio-textDarkPrim">Codice JS</span>
+                  <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec block font-semibold">24 elementi</span>
+                </div>
+
+                <div onclick="simulateFolderClick('AI')" class="p-4 bg-studio-bgLight/50 dark:bg-studio-bgDark/50 rounded-2xl border border-studio-borderLight dark:border-studio-borderDark hover:border-studio-accent/40 cursor-pointer transition-colors text-center space-y-2 group">
+                  <i data-lucide="folder-heart" class="w-10 h-10 mx-auto text-purple-500 group-hover:scale-110 transition-transform"></i>
+                  <span class="text-xs font-bold block text-studio-textLightPrim dark:text-studio-textDarkPrim">Moduli AI</span>
+                  <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec block font-semibold">15 elementi</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Colonna 2: File Ricorrenti -->
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl p-5 md:p-6 shadow-sm space-y-4">
+              <div class="flex items-center space-x-2 pb-2 border-b border-studio-borderLight dark:border-studio-borderDark">
+                <i data-lucide="files" class="w-5 h-5 text-studio-accent"></i>
+                <h4 class="font-bold text-sm text-studio-textLightPrim dark:text-studio-textDarkPrim">Ricorrenti</h4>
+              </div>
+
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3.5 bg-studio-bgLight/50 dark:bg-studio-bgDark/50 border border-studio-borderLight dark:border-studio-borderDark rounded-xl hover:border-studio-accent/20 transition-all group">
+                  <div class="flex items-center space-x-3.5">
+                    <div class="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-4.5 h-4.5"></i></div>
+                    <div class="leading-none">
+                      <span class="text-xs font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim block">Piano di Studi 2026.pdf</span>
+                      <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec mt-1 block font-semibold">PDF • 1.2 MB</span>
+                    </div>
+                  </div>
+                  <button onclick="simulateDownload('Piano di Studi 2026.pdf')" class="p-1.5 rounded hover:bg-studio-accent/10 text-studio-accent"><i data-lucide="download" class="w-4 h-4"></i></button>
+                </div>
+
+                <div class="flex items-center justify-between p-3.5 bg-studio-bgLight/50 dark:bg-studio-bgDark/50 border border-studio-borderLight dark:border-studio-borderDark rounded-xl hover:border-studio-accent/20 transition-all group">
+                  <div class="flex items-center space-x-3.5">
+                    <div class="w-8 h-8 rounded-lg bg-green-500/10 text-green-600 dark:text-green-400 flex items-center justify-center shrink-0"><i data-lucide="file-spreadsheet" class="w-4.5 h-4.5"></i></div>
+                    <div class="leading-none">
+                      <span class="text-xs font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim block">Orario_Lezioni.xlsx</span>
+                      <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec mt-1 block font-semibold">EXCEL • 420 KB</span>
+                    </div>
+                  </div>
+                  <button onclick="simulateDownload('Orario_Lezioni.xlsx')" class="p-1.5 rounded hover:bg-studio-accent/10 text-studio-accent"><i data-lucide="download" class="w-4 h-4"></i></button>
+                </div>
+
+                <div class="flex items-center justify-between p-3.5 bg-studio-bgLight/50 dark:bg-studio-bgDark/50 border border-studio-borderLight dark:border-studio-borderDark rounded-xl hover:border-studio-accent/20 transition-all group">
+                  <div class="flex items-center space-x-3.5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0"><i data-lucide="shield-check" class="w-4.5 h-4.5"></i></div>
+                    <div class="leading-none">
+                      <span class="text-xs font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim block">Regolamento Didattico.pdf</span>
+                      <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec mt-1 block font-semibold">PDF • 890 KB</span>
+                    </div>
+                  </div>
+                  <button onclick="simulateDownload('Regolamento Didattico.pdf')" class="p-1.5 rounded hover:bg-studio-accent/10 text-studio-accent"><i data-lucide="download" class="w-4 h-4"></i></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Colonna 3: Templates -->
+            <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl p-5 md:p-6 shadow-sm space-y-4">
+              <div class="flex items-center space-x-2 pb-2 border-b border-studio-borderLight dark:border-studio-borderDark">
+                <i data-lucide="file-code-2" class="w-5 h-5 text-studio-accent"></i>
+                <h4 class="font-bold text-sm text-studio-textLightPrim dark:text-studio-textDarkPrim">Templates di Studio</h4>
+              </div>
+
+              <div class="space-y-3">
+                <div class="flex items-center justify-between p-3.5 bg-studio-bgLight/50 dark:bg-studio-bgDark/50 border border-studio-borderLight dark:border-studio-borderDark rounded-xl hover:border-studio-accent/20 transition-all group">
+                  <div class="flex items-center space-x-3.5">
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0"><i data-lucide="bookmark" class="w-4.5 h-4.5"></i></div>
+                    <div class="leading-none">
+                      <span class="text-xs font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim block">Relazione Accademica</span>
+                      <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec mt-1 block font-semibold">WORD TEMPLATE • 4.5 MB</span>
+                    </div>
+                  </div>
+                  <button onclick="simulateDownload('Relazione Accademica.docx')" class="p-1.5 rounded hover:bg-studio-accent/10 text-studio-accent"><i data-lucide="download" class="w-4 h-4"></i></button>
+                </div>
+
+                <div class="flex items-center justify-between p-3.5 bg-studio-bgLight/50 dark:bg-studio-bgDark/50 border border-studio-borderLight dark:border-studio-borderDark rounded-xl hover:border-studio-accent/20 transition-all group">
+                  <div class="flex items-center space-x-3.5">
+                    <div class="w-8 h-8 rounded-lg bg-pink-500/10 text-pink-500 flex items-center justify-center shrink-0"><i data-lucide="presentation" class="w-4.5 h-4.5"></i></div>
+                    <div class="leading-none">
+                      <span class="text-xs font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim block">Presentazione Esame</span>
+                      <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec mt-1 block font-semibold">POWERPOINT • 12 MB</span>
+                    </div>
+                  </div>
+                  <button onclick="simulateDownload('Presentazione Esame.pptx')" class="p-1.5 rounded hover:bg-studio-accent/10 text-studio-accent"><i data-lucide="download" class="w-4 h-4"></i></button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- BANNER ARTICOLO / GUIDE DI STUDIO -->
+          <div class="bg-[#764003] text-white rounded-2xl p-6 shadow-lg flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+            <div class="space-y-2">
+              <h3 class="text-lg font-black">Guide e Metodologie di Studio</h3>
+              <p class="text-xs text-amber-100/90 font-medium leading-relaxed max-w-xl">
+                Approfondimenti didattici e metodologici esclusivi per organizzare al meglio le sessioni giornaliere. Scopri la tecnica del richiamo attivo e della ripetizione spaziata.
+              </p>
+            </div>
+            <button onclick="showToast('Apertura guida in corso...')" class="px-5 py-2.5 bg-white text-[#764003] font-bold text-xs rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 whitespace-nowrap shrink-0">
+              Sfoglia Guide
+            </button>
+          </div>
+
+          <!-- TABELLA FILE RECENTI -->
+          <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-studio-borderLight dark:border-studio-borderDark bg-studio-bgLight/40 dark:bg-studio-bgDark/40 flex justify-between items-center">
+              <h4 class="font-bold text-sm text-studio-textLightPrim dark:text-studio-textDarkPrim">File Aggiunti di Recente</h4>
+              <button onclick="showToast('Lista file sincronizzata')" class="text-xs text-studio-accent hover:text-studio-accentHover font-bold">Vedi tutto</button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-studio-borderLight dark:border-studio-borderDark text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider bg-studio-bgLight/10 dark:bg-studio-bgDark/10">
+                    <th class="px-6 py-3.5">Nome File</th>
+                    <th class="px-6 py-3.5">Ultima Modifica</th>
+                    <th class="px-6 py-3.5">Posizione</th>
+                    <th class="px-6 py-3.5 text-right">Azioni</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-studio-borderLight dark:divide-studio-borderDark text-xs">
+                  ${activitiesWithFiles.length === 0 ? `
+                    <tr class="hover:bg-studio-bgLight/20 dark:hover:bg-studio-bgDark/20 transition-colors">
+                      <td class="px-6 py-4 font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim flex items-center space-x-3">
+                        <i data-lucide="file-text" class="w-4 h-4 text-red-500"></i>
+                        <span>Esercitazione_DOM_manipulation.pdf</span>
+                      </td>
+                      <td class="px-6 py-4 text-studio-textLightSec dark:text-studio-textDarkSec font-medium">Modificato 2 ore fa</td>
+                      <td class="px-6 py-4 text-studio-accent font-semibold">In: Matematica I</td>
+                      <td class="px-6 py-4 text-right">
+                        <button onclick="simulateDownload('Esercitazione_DOM_manipulation.pdf')" class="p-1.5 rounded hover:bg-studio-accent/15 text-studio-accent" title="Download"><i data-lucide="download" class="w-4.5 h-4.5"></i></button>
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-studio-bgLight/20 dark:hover:bg-studio-bgDark/20 transition-colors">
+                      <td class="px-6 py-4 font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim flex items-center space-x-3">
+                        <i data-lucide="file" class="w-4 h-4 text-blue-500"></i>
+                        <span>Appunti_Lezione_Transformer.docx</span>
+                      </td>
+                      <td class="px-6 py-4 text-studio-textLightSec dark:text-studio-textDarkSec font-medium">Modificato ieri</td>
+                      <td class="px-6 py-4 text-studio-accent font-semibold">In: Moduli AI</td>
+                      <td class="px-6 py-4 text-right">
+                        <button onclick="simulateDownload('Appunti_Lezione_Transformer.docx')" class="p-1.5 rounded hover:bg-studio-accent/15 text-studio-accent" title="Download"><i data-lucide="download" class="w-4.5 h-4.5"></i></button>
+                      </td>
+                    </tr>
+                  ` : activitiesWithFiles.map(a => {
+                    const f = a.attachment;
+                    let iconColor = 'text-stone-500';
+                    const ext = f.name.split('.').pop().toLowerCase();
+                    if (ext === 'pdf') iconColor = 'text-red-500';
+                    else if (['pptx', 'ppt'].includes(ext)) iconColor = 'text-amber-500';
+                    else if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) iconColor = 'text-emerald-500';
+                    else if (['js', 'css', 'html', 'py', 'json', 'ts', 'java', 'cpp', 'c', 'sh'].includes(ext)) iconColor = 'text-indigo-500';
+                    
+                    return `
+                      <tr class="hover:bg-studio-bgLight/20 dark:hover:bg-studio-bgDark/20 transition-colors">
+                        <td class="px-6 py-4 font-bold text-studio-textLightPrim dark:text-studio-textDarkPrim flex items-center space-x-3 truncate max-w-xs">
+                          <i data-lucide="${getIconForAttachment(f.name)}" class="w-4.5 h-4.5 ${iconColor}"></i>
+                          <span class="truncate" title="${f.name}">${f.name}</span>
+                        </td>
+                        <td class="px-6 py-4 text-studio-textLightSec dark:text-studio-textDarkSec font-medium">${formatDateString(a.date)}</td>
+                        <td class="px-6 py-4 text-studio-accent font-bold">In: ${a.category}</td>
+                        <td class="px-6 py-4 text-right">
+                          <button onclick="downloadAttachment('${a.id}')" class="p-1.5 rounded hover:bg-studio-accent/15 text-studio-accent" title="Download"><i data-lucide="download" class="w-4.5 h-4.5"></i></button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+
+    // =========================================================================
+    // 4. RENDER VISTA ARCHIVIO STORICO
+    // =========================================================================
+    function setArchiveFilterCategory(e) {
+      APP_STATE.filters.category = e.target.value;
+      APP_STATE.pagination.currentPage = 1;
+      renderArchiveTableRows();
+    }
+
+    function handleArchiveSearch(e) {
+      APP_STATE.filters.searchQuery = e.target.value.toLowerCase();
+      APP_STATE.pagination.currentPage = 1;
+      renderArchiveTableRows();
+    }
+
+    function handleDateFilterChange() {
+      APP_STATE.filters.startDate = document.getElementById('archive-start-date').value;
+      APP_STATE.filters.endDate = document.getElementById('archive-end-date').value;
+      APP_STATE.pagination.currentPage = 1;
+      renderArchiveTableRows();
+    }
+
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(APP_STATE.activities, null, 2));
+      const dlAnchorElem = document.createElement('a');
+      dlAnchorElem.setAttribute("href", dataStr);
+      dlAnchorElem.setAttribute("download", "studio_activities_backup.json");
+      dlAnchorElem.click();
+      showToast("Tutti i dati sono stati esportati correttamente in JSON!");
+    }
+
+    function deleteActivity(id) {
+      if (confirm("Sei sicuro di voler eliminare questa sessione di studio? La cancellazione è irreversibile.")) {
+        APP_STATE.activities = APP_STATE.activities.filter(a => a.id !== id);
+        saveStateToLocalStorage();
+        showToast("Sessione eliminata dal database local.");
+        
+        // Se eliminiamo e siamo nel calendario o archivio, ri-renderizza per aggiornare in tempo reale
+        renderActiveTab();
+      }
+    }
+
+    function renderArchiveTableRows() {
+      const tbody = document.getElementById('archive-table-body');
+      if (!tbody) return;
+
+      // Applica filtri
+      let filtered = APP_STATE.activities.filter(a => {
+        // Filtro di ricerca testuale
+        const matchesSearch = 
+          a.topic.toLowerCase().includes(APP_STATE.filters.searchQuery) ||
+          a.notes.toLowerCase().includes(APP_STATE.filters.searchQuery) ||
+          (a.description && a.description.toLowerCase().includes(APP_STATE.filters.searchQuery)) ||
+          a.tags.some(t => t.toLowerCase().includes(APP_STATE.filters.searchQuery));
+
+        // Filtro categoria
+        const matchesCategory = 
+          APP_STATE.filters.category === 'ALL' || 
+          a.category === APP_STATE.filters.category;
+
+        // Filtro date limiti
+        let matchesDates = true;
+        if (APP_STATE.filters.startDate) {
+          matchesDates = matchesDates && (a.date >= APP_STATE.filters.startDate);
+        }
+        if (APP_STATE.filters.endDate) {
+          matchesDates = matchesDates && (a.date <= APP_STATE.filters.endDate);
+        }
+
+        return matchesSearch && matchesCategory && matchesDates;
+      });
+
+      // Ordinamento cronologico decrescente (da più recente a meno recente)
+      filtered.sort((a, b) => b.date.localeCompare(a.date));
+
+      const totalItems = filtered.length;
+      
+      // Imposta paginazione
+      const totalPages = Math.ceil(totalItems / APP_STATE.pagination.itemsPerPage) || 1;
+      if (APP_STATE.pagination.currentPage > totalPages) {
+        APP_STATE.pagination.currentPage = totalPages;
+      }
+      
+      const startIndex = (APP_STATE.pagination.currentPage - 1) * APP_STATE.pagination.itemsPerPage;
+      const endIndex = Math.min(startIndex + APP_STATE.pagination.itemsPerPage, totalItems);
+      const paginatedItems = filtered.slice(startIndex, endIndex);
+
+      // Rendering count label
+      const counterLabel = document.getElementById('archive-counter-label');
+      if (counterLabel) {
+        counterLabel.innerText = `Mostrando ${totalItems > 0 ? startIndex + 1 : 0}-${endIndex} di ${totalItems} elementi`;
+      }
+
+      // Render Pagination Buttons
+      const pagContainer = document.getElementById('archive-pagination-container');
+      if (pagContainer) {
+        let pagHTML = `
+          <button onclick="changePage(${APP_STATE.pagination.currentPage - 1})" ${APP_STATE.pagination.currentPage === 1 ? 'disabled' : ''} 
+                  class="p-2 border border-studio-borderLight dark:border-studio-borderDark rounded-lg hover:border-studio-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+        `;
+
+        for (let p = 1; p <= totalPages; p++) {
+          pagHTML += `
+            <button onclick="changePage(${p})" 
+                    class="px-3.5 py-1.5 border border-studio-borderLight dark:border-studio-borderDark rounded-lg text-xs font-bold transition-colors ${APP_STATE.pagination.currentPage === p ? 'bg-studio-accent text-white border-studio-accent shadow-sm' : 'bg-studio-cardLight dark:bg-studio-cardDark text-studio-textLightSec dark:text-studio-textDarkSec hover:border-studio-accent'}">
+              ${p}
+            </button>
+          `;
+        }
+
+        pagHTML += `
+          <button onclick="changePage(${APP_STATE.pagination.currentPage + 1})" ${APP_STATE.pagination.currentPage === totalPages ? 'disabled' : ''} 
+                  class="p-2 border border-studio-borderLight dark:border-studio-borderDark rounded-lg hover:border-studio-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        `;
+        pagContainer.innerHTML = pagHTML;
+      }
+
+      if (paginatedItems.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="px-6 py-12 text-center text-xs font-semibold text-studio-textLightSec dark:text-studio-textDarkSec">
+              Nessuna sessione di studio registrata soddisfa i criteri di ricerca impostati.
+            </td>
+          </tr>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      tbody.innerHTML = paginatedItems.map(a => {
+        let categoryBadgeColor = '';
+        if (a.category === 'AI-web-development') {
+          categoryBadgeColor = 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300';
+        } else {
+          categoryBadgeColor = 'bg-studio-accentLight text-studio-accent dark:bg-[#2C2117] dark:text-[#E2C7A8]';
+        }
+
+        return `
+          <tr class="hover:bg-studio-bgLight/20 dark:hover:bg-studio-bgDark/20 transition-colors">
+            
+            <!-- TITOLO -->
+            <td class="px-6 py-4">
+              <div class="flex items-center space-x-3">
+                <div class="w-8.5 h-8.5 rounded-lg bg-studio-accentLight/60 dark:bg-[#2C2117] text-studio-accent dark:text-[#E2C7A8] flex items-center justify-center shrink-0 shadow-sm">
+                  <i data-lucide="book-open" class="w-4.5 h-4.5"></i>
+                </div>
+                <div class="leading-none">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-extrabold text-studio-textLightPrim dark:text-studio-textDarkPrim block truncate max-w-[200px]" title="${a.topic}">${a.topic}</span>
+                    ${a.attachment ? `
+                      <button onclick="downloadAttachment('${a.id}')" class="text-studio-accent hover:text-studio-accentHover shrink-0" title="Scarica allegato: ${a.attachment.name}">
+                        <i data-lucide="paperclip" class="w-3.5 h-3.5"></i>
+                      </button>
+                    ` : ''}
+                  </div>
+                  <span class="text-[9px] text-studio-textLightSec dark:text-studio-textDarkSec font-semibold mt-1 block max-w-sm line-clamp-1">${a.notes || 'Note non presenti.'}</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- DATA -->
+            <td class="px-6 py-4 text-xs font-bold text-studio-textLightSec dark:text-studio-textDarkSec">
+              ${formatDateString(a.date)}
+            </td>
+
+            <!-- CATEGORIA -->
+            <td class="px-6 py-4">
+              <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full ${categoryBadgeColor}">
+                ${a.category}
+              </span>
+            </td>
+
+            <!-- STATUS -->
+            <td class="px-6 py-4">
+              <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-1.5" title="${a.isLessonDone ? 'Lezione completata' : 'In attesa'}">
+                  <i data-lucide="${a.isLessonDone ? 'check-circle-2' : 'circle'}" class="w-4 h-4 ${a.isLessonDone ? 'text-studio-accent' : 'text-stone-300 dark:text-stone-700'}"></i>
+                  <span class="text-[10px] font-semibold text-studio-textLightSec dark:text-studio-textDarkSec">Lezione</span>
+                </div>
+                <div class="flex items-center space-x-1.5" title="${a.isHomeworkUploaded ? 'Compito consegnato' : 'In attesa'}">
+                  <i data-lucide="${a.isHomeworkUploaded ? 'check-circle-2' : 'circle'}" class="w-4 h-4 ${a.isHomeworkUploaded ? 'text-amber-500' : 'text-stone-300 dark:text-stone-700'}"></i>
+                  <span class="text-[10px] font-semibold text-studio-textLightSec dark:text-studio-textDarkSec">Compito</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- AZIONI -->
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end space-x-2">
+                <button onclick="openModal('${a.id}')" class="p-1.5 rounded hover:bg-studio-accentLight dark:hover:bg-[#2C2117] text-studio-accent" title="Modifica"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                <button onclick="deleteActivity('${a.id}')" class="p-1.5 rounded hover:bg-red-500/10 text-red-500" title="Elimina"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              </div>
+            </td>
+
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function changePage(pageNum) {
+      APP_STATE.pagination.currentPage = pageNum;
+      renderArchiveTableRows();
+    }
+
+    function renderArchivio(container) {
+      container.innerHTML = `
+        <div class="animate-fade-in space-y-6">
+          <!-- Riga Intestazione Archivio -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 class="text-2xl md:text-3xl font-extrabold text-studio-textLightPrim dark:text-studio-textDarkPrim leading-none">Archivio Storico</h2>
+              <p class="text-xs md:text-sm text-studio-textLightSec dark:text-studio-textDarkSec font-medium mt-2">Consulta, filtra, modifica ed elimina tutte le attività di studio salvate.</p>
+            </div>
+            
+            <button onclick="exportJSON()" class="px-4 py-2.5 bg-studio-accent hover:bg-studio-accentHover text-white text-xs font-bold rounded-xl shadow transition-colors flex items-center gap-1.5 shrink-0">
+              <i data-lucide="download" class="w-4 h-4"></i> Download All
+            </button>
+          </div>
+
+          <!-- BARRA FILTRI DEDICATA -->
+          <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl p-4 md:p-5 shadow-sm space-y-4">
+            <span class="text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider block">Opzioni di Ricerca Avanzata</span>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Cerca per Parola Chiave -->
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-studio-textLightSec/60 dark:text-studio-textDarkSec/50"><i data-lucide="search" class="w-4 h-4"></i></span>
+                <input type="text" id="search-archive-input" oninput="handleArchiveSearch(event)" placeholder="Cerca titolo o tag..." 
+                       class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl pl-10 pr-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-studio-accent focus:border-studio-accent transition-all text-studio-textLightPrim dark:text-studio-textDarkPrim">
+              </div>
+
+              <!-- Filtro Categoria Dropdown -->
+              <div>
+                <select onchange="setArchiveFilterCategory(event)" 
+                        class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-studio-accent focus:border-studio-accent transition-all text-studio-textLightPrim dark:text-studio-textDarkPrim font-semibold">
+                  <option value="ALL">Tutte le Categorie</option>
+                  <option value="HTML">HTML</option>
+                  <option value="CSS">CSS</option>
+                  <option value="JS">JavaScript (JS)</option>
+                  <option value="AI-web-development">AI Web Development</option>
+                </select>
+              </div>
+
+              <!-- Data Inizio -->
+              <div class="flex items-center space-x-2">
+                <span class="text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec shrink-0">Da:</span>
+                <input type="date" id="archive-start-date" onchange="handleDateFilterChange()" 
+                       class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-studio-accent transition-all text-studio-textLightPrim dark:text-studio-textDarkPrim">
+              </div>
+
+              <!-- Data Fine -->
+              <div class="flex items-center space-x-2">
+                <span class="text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec shrink-0">A:</span>
+                <input type="date" id="archive-end-date" onchange="handleDateFilterChange()" 
+                       class="w-full bg-studio-bgLight dark:bg-studio-bgDark border border-studio-borderLight dark:border-studio-borderDark rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-studio-accent transition-all text-studio-textLightPrim dark:text-studio-textDarkPrim">
+              </div>
+            </div>
+          </div>
+
+          <!-- TABELLA DI DATI ARCHIVIO STORICO -->
+          <div class="bg-studio-cardLight dark:bg-studio-cardDark border border-studio-borderLight dark:border-studio-borderDark rounded-2xl shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-studio-borderLight dark:border-studio-borderDark text-[10px] font-bold text-studio-textLightSec dark:text-studio-textDarkSec uppercase tracking-wider bg-studio-bgLight/40 dark:bg-studio-bgDark/40">
+                    <th class="px-6 py-4">Titolo Argomento</th>
+                    <th class="px-6 py-4">Data Sessione</th>
+                    <th class="px-6 py-4">Categoria</th>
+                    <th class="px-6 py-4">Status Attività</th>
+                    <th class="px-6 py-4 text-right">Azioni</th>
+                  </tr>
+                </thead>
+                <tbody id="archive-table-body" class="divide-y divide-studio-borderLight dark:divide-studio-borderDark">
+                  <!-- Iniettati dinamicamente da renderArchiveTableRows() -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Footer Paginazione -->
+            <div class="px-6 py-4 bg-studio-bgLight/30 dark:bg-studio-bgDark/30 border-t border-studio-borderLight dark:border-studio-borderDark flex flex-col sm:flex-row justify-between items-center gap-4">
+              <span id="archive-counter-label" class="text-[11px] text-studio-textLightSec dark:text-studio-textDarkSec font-bold"></span>
+              <div id="archive-pagination-container" class="flex items-center space-x-1.5">
+                <!-- Bottoni paginazione iniettati dinamicamente -->
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Esegui la renderizzazione iniziale delle righe
+      renderArchiveTableRows();
+      
+      // Inizializza icone
+      lucide.createIcons();
+    }
+
+
+    // =========================================================================
+    // 5. COMPONENTE MODALE FORM (LOGICA APERTURA / SALVATAGGIO / STELLINE / FILE UPLOAD)
+    // =========================================================================
+    function handleFileSelection(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const maxBytes = 2 * 1024 * 1024; // 2MB
+      const isTooLarge = file.size > maxBytes;
+      
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const attachment = {
+          name: file.name,
+          size: formatBytes(file.size),
+          type: file.type,
+          data: evt.target.result // Stringa Base64 (DataURL)
+        };
+        
+        if (isTooLarge) {
+          showToast("File superiore a 2MB. Verrà registrato il nome, ma il file non sarà salvato offline.");
+          attachment.data = ""; // Non salvare il corpo binario enorme per non intasare localStorage
+        }
+        
+        APP_STATE.currentAttachment = attachment;
+        renderFilePreview();
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    function removeAttachedFile(e) {
+      if (e) e.stopPropagation();
+      APP_STATE.currentAttachment = null;
+      document.getElementById('file-input').value = '';
+      renderFilePreview();
+    }
+    
+    function renderFilePreview() {
+      const prompt = document.getElementById('dropzone-prompt');
+      const preview = document.getElementById('file-preview');
+      
+      if (APP_STATE.currentAttachment) {
+        prompt.classList.add('hidden');
+        preview.classList.remove('hidden');
+        document.getElementById('file-preview-name').innerText = APP_STATE.currentAttachment.name;
+        document.getElementById('file-preview-name').title = APP_STATE.currentAttachment.name;
+        document.getElementById('file-preview-size').innerText = APP_STATE.currentAttachment.size;
+        
+        const iconEl = document.getElementById('file-preview-icon');
+        const iconName = getIconForAttachment(APP_STATE.currentAttachment.name);
+        iconEl.setAttribute('data-lucide', iconName);
+        lucide.createIcons();
+      } else {
+        prompt.classList.remove('hidden');
+        preview.classList.add('hidden');
+        document.getElementById('file-input').value = '';
+      }
+    }
+    
+    function formatBytes(bytes, decimals = 1) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+    
+    function getIconForAttachment(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      if (['pdf'].includes(ext)) return 'file-text';
+      if (['pptx', 'ppt', 'key'].includes(ext)) return 'presentation';
+      if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext)) return 'image';
+      if (['js', 'css', 'html', 'py', 'json', 'ts', 'java', 'cpp', 'c', 'sh'].includes(ext)) return 'code-2';
+      if (['zip', 'rar', 'tar', 'gz', '7z'].includes(ext)) return 'archive';
+      return 'file';
+    }
+    
+    function downloadAttachment(activityId) {
+      const act = APP_STATE.activities.find(a => a.id === activityId);
+      if (!act || !act.attachment) return;
+      
+      const att = act.attachment;
+      if (!att.data) {
+        showToast("Il file non è salvato offline perché superava i 2MB.");
+        return;
+      }
+      
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", att.data);
+      dlAnchor.setAttribute("download", att.name);
+      dlAnchor.click();
+      showToast(`Download avviato: ${att.name}`);
+    }
+
+    function setRating(val) {
+      APP_STATE.rating = val;
+      for (let i = 1; i <= 5; i++) {
+        const star = document.getElementById(`star-${i}`);
+        if (!star) continue;
+        if (i <= val) {
+          star.classList.add('fill-current', 'text-amber-500');
+          star.classList.remove('text-stone-300', 'dark:text-stone-700');
+        } else {
+          star.classList.remove('fill-current', 'text-amber-500');
+          star.classList.add('text-stone-300', 'dark:text-stone-700');
+        }
+      }
+    }
+
+    function openModal(activityId = null, prefilledDate = null) {
+      const container = document.getElementById('modal-container');
+      const form = document.getElementById('activity-form');
+      const title = document.getElementById('modal-title');
+      const icon = document.getElementById('modal-icon');
+      
+      form.reset();
+      
+      // Imposta data odierna come default
+      const dateEl = document.getElementById('date');
+      const todayStr = new Date().toISOString().split('T')[0];
+      dateEl.value = todayStr;
+
+      if (prefilledDate) {
+        dateEl.value = prefilledDate;
+      }
+
+      if (activityId) {
+        // MODALITÀ MODIFICA
+        title.innerText = "Modifica Sessione di Studio";
+        document.getElementById('activity-id').value = activityId;
+        
+        const act = APP_STATE.activities.find(a => a.id === activityId);
+        if (act) {
+          document.getElementById('topic').value = act.topic;
+          document.getElementById('date').value = act.date;
+          document.getElementById('category').value = act.category;
+          document.getElementById('isLessonDone').checked = act.isLessonDone;
+          document.getElementById('isHomeworkUploaded').checked = act.isHomeworkUploaded;
+          document.getElementById('platformLink').value = act.platformLink || '';
+          document.getElementById('notes').value = act.notes || '';
+          document.getElementById('description').value = act.description || '';
+          document.getElementById('tags').value = act.tags ? act.tags.join(', ') : '';
+          setRating(act.rating);
+          APP_STATE.currentAttachment = act.attachment || null;
+        }
+      } else {
+        // MODALITÀ INSERIMENTO NUOVO
+        title.innerText = "Registra Nuova Lezione";
+        document.getElementById('activity-id').value = '';
+        setRating(5); // Autovalutazione di default 5
+        APP_STATE.currentAttachment = null;
+      }
+      renderFilePreview();
+
+      // Mostra modale con transizione fade ed effetto scala
+      container.classList.remove('hidden');
+      setTimeout(() => {
+        container.classList.remove('opacity-0');
+        container.querySelector('div').classList.remove('scale-95');
+        container.querySelector('div').classList.add('scale-100');
+      }, 50);
+      
+      // Inizializza icone Lucide interne al modale
+      lucide.createIcons();
+    }
+
+    function closeModal() {
+      const container = document.getElementById('modal-container');
+      container.querySelector('div').classList.remove('scale-100');
+      container.querySelector('div').classList.add('scale-95');
+      container.classList.add('opacity-0');
+      
+      setTimeout(() => {
+        container.classList.add('hidden');
+      }, 300);
+    }
+
+    function saveActivity(event) {
+      event.preventDefault();
+      
+      const id = document.getElementById('activity-id').value;
+      const topic = document.getElementById('topic').value.trim();
+      const date = document.getElementById('date').value;
+      const category = document.getElementById('category').value;
+      const isLessonDone = document.getElementById('isLessonDone').checked;
+      const isHomeworkUploaded = document.getElementById('isHomeworkUploaded').checked;
+      const platformLink = document.getElementById('platformLink').value.trim();
+      const notes = document.getElementById('notes').value.trim();
+      const description = document.getElementById('description').value.trim();
+      const tagsStr = document.getElementById('tags').value.trim();
+      
+      // Parsing dei tag separati da virgola
+      const tags = tagsStr ? tagsStr.split(',').map(t => t.trim().toLowerCase()).filter(t => t) : [];
+
+      if (!topic || !date) {
+        showToast("Errore: Compila tutti i campi obbligatori contrassegnati con l'asterisco.");
+        return;
+      }
+
+      const activityData = {
+        topic,
+        date,
+        category,
+        isLessonDone,
+        isHomeworkUploaded,
+        platformLink,
+        notes,
+        description,
+        tags,
+        rating: APP_STATE.rating,
+        attachment: APP_STATE.currentAttachment
+      };
+
+      if (id) {
+        // MODIFICA ATTIVITÀ
+        const index = APP_STATE.activities.findIndex(a => a.id === id);
+        if (index !== -1) {
+          APP_STATE.activities[index] = { ...APP_STATE.activities[index], ...activityData };
+          showToast("Sessione di studio modificata con successo!");
+        }
+      } else {
+        // AGGIUNTA NUOVA
+        const newActivity = {
+          id: 'activity-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+          ...activityData
+        };
+        APP_STATE.activities.push(newActivity);
+        showToast("Nuova lezione registrata nel Centro di Controllo!");
+      }
+
+      // Salva lo stato modificato localmente
+      saveStateToLocalStorage();
+      
+      // Chiudi il modale
+      closeModal();
+      
+      // Se il giorno modificato/aggiunto è diverso, aggiorna selectedDate
+      const parts = date.split('-');
+      APP_STATE.selectedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+      APP_STATE.currentCalendarMonth = new Date(parts[0], parts[1] - 1, 1);
+
+      // Aggiorna la vista dinamica in esecuzione
+      renderActiveTab();
+    }
+
+
+    // =========================================================================
+    // INIZIALIZZAZIONE GLOBALE DELL'APPLICAZIONE (DOM READY)
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Carica lo stato e mock
+      initAppState();
+
+      // 2. Rendi attiva la prima vista (Dashboard)
+      switchTab('dashboard');
+
+      // 3. Ascolta click esterno al modale per chiuderlo
+      const modalEl = document.getElementById('modal-container');
+      modalEl.addEventListener('click', closeModal);
+    });
+  </script>
+</body>
+</html>
